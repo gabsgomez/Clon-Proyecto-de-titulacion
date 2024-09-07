@@ -1,0 +1,45 @@
+/* Estilo general del formulario */
+.search-form {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+    background-color: #131722;
+  }
+  
+  /* Estilo del input de búsqueda */
+  .search-input {
+    width: 100%;
+    max-width: 400px; /* Ancho máximo de la barra de búsqueda */
+    padding: 10px 15px;
+    font-size: 1rem;
+    border: 2px solid #007bff;
+    border-radius: 8px;
+    outline: none;
+    transition: border-color 0.3s ease;
+    margin-bottom: 30px;
+  }
+  
+  /* Cambio de color del borde cuando el input está enfocado */
+  .search-input:focus {
+    border-color: #007bff; /* Color del borde al enfocar */
+  }
+  
+  /* Estilo del botón de búsqueda */
+  .search-button {
+    margin-left: 10px;
+    padding: 10px 20px;
+    font-size: 1rem;
+    color: white;
+    background-color: #007bff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  /* Cambio de color del botón al pasar el cursor */
+  .search-button:hover {
+    background-color: #0056b3; /* Color más oscuro en hover */
+  }
+  

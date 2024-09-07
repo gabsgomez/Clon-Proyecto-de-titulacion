@@ -1,0 +1,23 @@
+
+/* Contenedor principal del widget */
+.tradingview-widget-containerr {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%; /* Ocupar el ancho completo */
+  max-width: 100%;
+  height: 620px; /* Asegurar que tenga la altura fija */
+  background-color: #333; /* Cambia el color de fondo al gris deseado */
+  border-radius: 8px;
+  padding: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Widget de TradingView */
+#tradingview-widgett {
+  width: 100%; /* Ocupar el 100% del ancho */
+  height: 100%; /* Ocupar el 100% de la altura */
+  border: none;
+}
+
+

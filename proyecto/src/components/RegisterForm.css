@@ -1,0 +1,156 @@
+/* Estilos generales */
+ h1 {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  color: #000000;
+  font-family: 'Poppins', sans-serif;
+  font-size: 40px;
+  font-weight: 900;
+  text-align: center; /* Centra el texto */
+}
+
+.form-container {
+ 
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #fbb5de;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 850px;
+  margin:  0 auto; /* Centra el contenedor en la página */
+  
+}
+
+.form-contentt {
+  width: fit-content;
+  background-color: white;
+  border-radius: 30px;
+  margin-bottom: 10%;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Centra el contenido del formulario */
+}
+
+.register-form {
+  background-color: white;
+  opacity: 100%;
+  max-width: 1024px; /* Limita el ancho del formulario para centrarlo mejor */
+  margin: 0 auto;
+  
+}
+
+.register-form input,
+.register-form select {
+  margin-bottom: 10px;
+  padding: 10px;
+  border: 3px solid #000000;
+  border-radius: 7px;
+  font-size: 20px;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  background-color: #B7DFDB;
+  height: 40px;
+  width: 500px;
+}
+
+.register-form select {
+  height: 50px;
+  width: 500px;
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Centra los botones en la columna */
+  width: 100%;
+  max-width: 500px; /* Ajusta el ancho de los botones al ancho del formulario */
+  margin-top: 20px;
+}
+
+.options button {
+  margin-bottom: 10px;
+  padding: 10px;
+  background-color: #70a6cd;
+  border: 3px solid #000000;
+  border-radius: 20px;
+  font-size: 20px;
+  cursor: pointer;
+  width: 300px;
+  max-width: 500px; /* Puedes ajustar esto si quieres que los botones sean un poco más pequeños */
+  height: 70px;
+  font-family: 'Poppins', sans-serif;
+  font-weight: bolder;
+  color: #000000;
+}
+
+.options button.selected {
+  background-color: #a0d2eb; /* Color más pálido */
+}
+
+
+.submit-button {
+  padding: 10px;
+  background-color: #f98383;
+  border: 3px solid #000000;
+  border-radius: 20px;
+  font-size: 24px;
+  cursor: pointer;
+  width: 200px;
+  max-width: 500px;
+  margin-top: 20px;
+}
+
+/* Media Queries */
+@media (max-width: 1024px) {
+  .registra-tu-datos h1 {
+      font-size: 36px;
+  }
+}
+
+@media (max-width: 900px) {
+  .registra-tu-datos h1 {
+      font-size: 36px;
+  }
+
+  .register-form input{
+    width: auto;
+  }
+  .register-form select{
+    width: auto;
+  }
+
+
+}
+
+@media (max-width: 800px) {
+  .registra-tu-datos h1 {
+      font-size: 34px;
+  }
+}
+
+@media (max-width: 700px) {
+  .registra-tu-datos h1 {
+      font-size: 32px;
+  }
+}
+
+@media (max-width: 600px) {
+  .registra-tu-datos h1 {
+      font-size: 28px;
+  }
+}
+
+@media (max-width: 500px) {
+  .registra-tu-datos h1 {
+      font-size: 26px;
+  }
+}
+
+@media (max-width: 400px) {
+  .registra-tu-datos h1 {
+      font-size: 24px;
+  }
+}

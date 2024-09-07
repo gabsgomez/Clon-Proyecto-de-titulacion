@@ -1,0 +1,114 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+body {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.Que-es-etf {
+    font-family: 'Poppins', sans-serif;
+    font-size: 64px;
+    font-weight: 900;
+    color: #040434;
+    text-align: center;
+    margin: 20px 50px;
+}
+
+.texto-que-es-etf {
+    font-family: 'Poppins', sans-serif;
+    font-size: 24px;
+    font-weight: 600;
+    color: #000000;
+    text-align: center;
+    margin: 20px 50px;
+}
+
+.Cursos {
+    font-family: 'Poppins', sans-serif;
+    font-size: 50px;
+    font-weight: 900;
+    color: #040434;
+    text-align: center;
+    margin: 20px;
+}
+
+
+
+.Principiantes,
+.Avanzados,
+.Asesorias-Financieras {
+    font-family: 'Poppins', sans-serif;
+    font-size: 40px;
+    font-weight: 900;
+    color: #040434;
+    width: 100%;
+}
+
+.contenedor-Principiantes,
+.contenedor-Avanzados {
+    background-color: #B7DFDB;
+    border-radius: 10px;
+    padding: 20px;
+    box-sizing: border-box;
+    width: calc(50% - 20px);
+    margin: 10px 0;
+    min-height: 200px; /* Ajusta la altura mínima según sea necesario */
+}
+
+.contenedor-Asesorias-Financieras {
+    background-color: #B7DFDB;
+    border-radius: 10px;
+    padding: 20px;
+    box-sizing: border-box;
+    width: 352px;
+    margin: 10px auto;
+}
+
+.texto-principiantes,
+.texto-Avanzados,
+.texto-Asesorias-Financieras {
+    font-family: 'Poppins', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: #040434;
+    text-align: left;
+}
+
+/* Media Queries */
+@media (max-width: 768px) {
+    .contenedor-padre {
+        flex-direction: column; /* Cambia la dirección del flex a columna */
+    }
+
+    .contenedor-Principiantes,
+    .contenedor-Avanzados {
+        width: 100%; /* Toma todo el ancho disponible */
+    }
+
+    .Que-es-etf, .Cursos {
+        font-size: 36px;
+    }
+
+    .Principiantes, .Avanzados, .Asesorias-Financieras {
+        font-size: 30px;
+    }
+
+    .texto-que-es-etf, .texto-principiantes, .texto-Avanzados, .texto-Asesorias-Financieras {
+        font-size: 18px;
+    }
+}
+
+@media (max-width: 480px) {
+    .Que-es-etf, .Cursos {
+        font-size: 28px;
+    }
+
+    .Principiantes, .Avanzados, .Asesorias-Financieras {
+        font-size: 24px;
+    }
+
+    .texto-que-es-etf, .texto-principiantes, .texto-Avanzados, .texto-Asesorias-Financieras {
+        font-size: 16px;
+    }
+}

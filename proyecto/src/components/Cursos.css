@@ -1,0 +1,91 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+.Nuestros-cursos h1{
+    font-family: 'Poppins', sans-serif; 
+    font-size: 64px;
+    font-weight: 900;
+    text-align: center;
+    color: #040434;
+}
+
+.Nuestros-cursos p{
+    font-family: 'Poppins', sans-serif; 
+    font-size: 24px;
+    font-weight: 500;
+    text-align: center;
+    color: #000000;
+    margin-left: 50px;
+    margin-right: 50px;
+}
+
+.Principiantes{
+    font-family: 'Poppins', sans-serif; /* Cambiado a la fuente Poppins */
+    font-size: 40px;
+    font-weight: 900;
+    color: #040434;
+    text-decoration: none;
+    text-align:left;
+    margin-left: 70px;
+}
+
+.contenedor-Principiantes{
+    background-color: #B7DFDB; /* Color de fondo del contenedor */
+    border-radius: 10px; /* Esquinas redondeadas */
+    padding: 20px; /* Espacio alrededor del texto */
+    width:400px;
+    height: fit-content;
+
+}
+.contenedor-Principiantes img{
+    width:390px;
+    height: fit-content;
+    padding: 10 10px;
+
+}
+
+.texto-principiantes{
+    font-family: 'Poppins', sans-serif; /* Cambiado a la fuente Poppins */
+    font-size: 16px;
+    font-weight: 600;
+    color: #040434;
+    text-decoration: none;
+    text-align:center;
+    
+}
+
+.Avanzados{
+    font-family: 'Poppins', sans-serif; /* Cambiado a la fuente Poppins */
+    font-size: 40px;
+    font-weight: 900;
+    color: #040434;
+    text-decoration: none;
+    text-align:right;
+    margin-right: 70px;
+}
+
+.contenedor-Avanzados{
+    background-color: #B7DFDB; /* Color de fondo del contenedor */
+    border-radius: 10px; /* Esquinas redondeadas */
+    padding: 20px; /* Espacio alrededor del texto */
+    width:352px;
+    height: fit-content;
+    margin-left: auto;
+}
+
+.texto-Avanzados{
+    font-family: 'Poppins', sans-serif; /* Cambiado a la fuente Poppins */
+    font-size: 16px;
+    font-weight: 600;
+    color: #040434;
+    text-decoration: none;
+    text-align: left;
+    
+    
+    
+}
+
+.contenedor-padre {
+    display: flex; /* Utiliza flexbox */
+    justify-content: space-between; /* Espacio entre los elementos */
+
+  }

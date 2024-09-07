@@ -1,0 +1,15 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Poppins', sans-serif;
+  background-color: #F8EAFF; /* Fondo #F8EAFF para el resto de la aplicación */
+}
+
+/* Estilos globales para la clase 'App' */
+.App {
+  background-color: #F8EAFF; /* Color de fondo de la aplicación */
+}
+
+/* Otros estilos globales si los necesitas */

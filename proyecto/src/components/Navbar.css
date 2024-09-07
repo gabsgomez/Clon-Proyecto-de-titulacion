@@ -1,0 +1,143 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@700;700&display=swap');
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  background-color: white;
+  position: relative;
+}
+
+.nav-links {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.nav-links a {
+  font-family: 'Poppins', sans-serif;
+  font-size: 30px;
+  font-weight: bold;
+  color: #000000;
+  text-decoration: none;
+  margin-right: 20px;
+}
+
+.buttons {
+  display: flex;
+  flex-wrap: wrap;
+  
+}
+
+.login-button,
+.register-button {
+  font-family: 'Poppins', sans-serif;
+  font-size: 24px;
+  font-weight: bold;
+  color: #ffffff;
+  background-color: #72bbb4;
+  border: none;
+  padding: 10px 20px;
+  margin-left: 10px;
+  border-radius: 10px;
+}
+
+.logo img {
+  width: 100px;
+  height: 100px;
+}
+
+.hamburger {
+  display: none;
+  flex-direction: column;
+  cursor: pointer;
+}
+
+.hamburger .line {
+  width: 25px;
+  height: 3px;
+  background-color: black;
+  margin: 4px 0;
+}
+
+@font-face {
+  font-family: 'Poppins';
+  src: url('../Fonts/Poppins-SemiBold.ttf') format('truetype');
+}
+
+@media (max-width: 1024px) {
+  .nav-links a {
+    font-size: 20px;
+    margin-right: 15px;
+  }
+
+  .login-button,
+  .register-button {
+    font-size: 20px;
+    padding: 8px 16px;
+  }
+
+  .logo img {
+    width: 80px;
+    height: 80px;
+  }
+}
+
+@media (max-width: 768px) {
+  .nav-links {
+    display: none;
+    flex-direction: column;
+    width: 100%;
+    background-color: white;
+    position: absolute;
+    top: 70px;
+    left: 0;
+    padding: 20px 0;
+    box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
+
+  }
+
+  .nav-links.open {
+    display: flex;
+  }
+
+  .nav-links a {
+    margin: 10px 0;
+    font-size: 18px;
+    text-align: center;
+  }
+
+  .buttons {
+    display: none;
+    flex-direction: column;
+    width: 100%;
+    align-items: center;
+  }
+
+  .buttons .login-button,
+  .buttons .register-button {
+    font-size: 18px;
+    margin: 10px 0;
+  }
+
+  .buttons.open {
+    display: flex;
+  }
+
+  .hamburger {
+    display: flex;
+  }
+}
+
+@media (max-width: 400px) {
+  .nav-links a,
+  .login-button,
+  .register-button {
+    font-size: 16px;
+  }
+
+  .logo img {
+    width: 60px;
+    height: 60px;
+  }
+}
