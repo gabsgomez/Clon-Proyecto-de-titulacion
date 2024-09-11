@@ -49,7 +49,7 @@ app.use('/api/auth', authRoutes);
 app.get('/api/latest-user-type', authController.getLatestUserType);
 
 //lo nuevo
-app.get('/get-user-type', authController.getUserType);
+//app.get('/get-user-type', authController.getUserType);
 
 const PORT = process.env.PORT || 5000;
 
