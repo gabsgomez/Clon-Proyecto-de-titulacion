@@ -18,6 +18,8 @@ const app = express();
 const port = 4000; // Asegúrate de que el puerto sea 5000
 
 app.use(cors());
+
+
 app.use(express.json());
 
 app.get("/mercadopago", (req, res) => {
@@ -35,10 +37,12 @@ app.post("/create_preference", async (req, res) => {
         },
       ],
       back_urls: {
-        success: "https://mercadopago.com",
-        failure: "https://localhost:3000/cancel",
-        pending: "https://localhost:3000/Caja",
+        success: "https://www.mercadopago.com.mx/developers/es/docs#online-payments",
+        failure: "https://tu-ngrok-url.com/cancel",
+        pending: "https://tu-ngrok-url.com/Caja",
       },
+      
+      
       auto_return: "approved",
     };
 
@@ -59,9 +63,5 @@ app.post("/create_preference", async (req, res) => {
 app.listen(port, () => {
   console.log(`El servidor corre en el puerto ${port}`);
 });
-
-
-///////////////////////////////////////////////////////////////
-
 
 

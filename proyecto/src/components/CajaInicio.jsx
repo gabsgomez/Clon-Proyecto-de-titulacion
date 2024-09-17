@@ -52,6 +52,8 @@ const Caja = () => {
         quantity: 1,
         price: product.price,
       });
+      
+
       const { id } = response.data;
       setPreferenceId(id);
     } catch (error) {
