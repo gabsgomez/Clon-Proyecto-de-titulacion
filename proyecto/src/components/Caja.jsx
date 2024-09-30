@@ -24,7 +24,8 @@ const Caja = () => {
   // Inicializa Mercado Pago
   initMercadoPago("TEST-144027e0-809b-4e58-a14c-0d2eb320a78d", {
     locale: "es-MX",
-  });
+  }); //public key cottaggee
+  
 
   useEffect(() => {
     // Obtén el tipo de usuario desde el backend
