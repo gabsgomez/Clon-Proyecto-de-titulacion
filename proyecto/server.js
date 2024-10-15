@@ -28,8 +28,6 @@ server.listen(PORT, () => {
 
 */
 
-
-
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
@@ -49,12 +47,11 @@ app.use('/api/auth', authRoutes);
 app.get('/api/latest-user-type', authController.getLatestUserType);
 
 //lo nuevo
-app.get('/get-user-type', authController.getUserType);
-
-const PORT = process.env.PORT || 5000;
-
-server.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-});
-
+//app.get('/get-user-type', authController.getUserType);
+  
+  const PORT = process.env.PORT || 5000;
+  
+  server.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+  });
 
