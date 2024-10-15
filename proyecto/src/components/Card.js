@@ -32,3 +32,4 @@ const Card = ({ data, onViewed }) => {
 }
 
 export default Card;
+

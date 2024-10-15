@@ -1,81 +1,3 @@
-/*import express from "express";
-import cors from "cors";
-
-
-
-// Configura las credenciales de Mercado Pago
-
-// SDK de Mercado Pago
-import { MercadoPagoConfig, Preference } from "mercadopago";
-// Agrega credenciales
-const client = new MercadoPagoConfig({
-  accessToken:
-    "TEST-5671825137719752-090515-ccee7549724eb1f9776d0b0affa84d5b-672353286",
-});
-
-//ACCESS TOKEN QUE COTTAGGEE= TEST-5671825137719752-090515-ccee7549724eb1f9776d0b0affa84d5b-672353286
-const app = express();
-const port = 4000; // Asegúrate de que el puerto sea 5000
-
-app.use(cors());
-
-
-app.use(express.json());
-
-app.get("/mercadopago", (req, res) => {
-  res.send("soy el servidor :)");
-});
-
-app.post("/create_preference", async (req, res) => {
-  try {
-    const body = {
-      items: [
-        {
-          title: req.body.title,
-          quantity: Number(req.body.quantity),
-          unit_price: Number(req.body.price),
-        },
-      ],
-      back_urls: {
-        success: "https://b260-2806-2f0-55e1-e409-389e-7ac6-6d66-4032.ngrok-free.app/AulaInteractiva",
-        failure: "https://b260-2806-2f0-55e1-e409-389e-7ac6-6d66-4032.ngrok-free.app/Caja",
-        pending: "https://b260-2806-2f0-55e1-e409-389e-7ac6-6d66-4032.ngrok-free.app/login",
-      },
-      
-      
-      auto_return: "approved",
-    };
-
-    const preference = new Preference(client);
-    const result = await preference.create({ body });
-    res.json({
-      id: result.id,
-    });
-  } catch (error) {
-    console.error("Error al crear la preferencia:", error.response ? error.response.data : error.message);
-
-    res.status(500).send("Error al crear la preferencia");
-  }
-});
-
-
-
-app.listen(port, () => {
-  console.log(`El servidor corre en el puerto ${port}`);
-});
-
-
-*/
-
-
-
-
-
-
-
-
-
-
 
 ////////////////////////////////         FUNCIONA CON WEBHOOK Y BD             /////////////////////////////
 import express from "express";
@@ -226,3 +148,76 @@ const verificarEstadoDePago = async (paymentId) => {
 app.listen(port, () => {
   console.log(`El servidor corre en el puerto ${port}`);
 });
+
+
+
+
+
+
+
+
+
+
+/*
+import express from "express";
+import cors from "cors";
+import { MercadoPagoConfig, Preference } from "mercadopago"; // SDK de Mercado Pago
+import axios from "axios"; // Para hacer solicitudes HTTP
+import mysql from "mysql2";
+
+
+
+
+// Agrega credenciales
+// Configura las credenciales de Mercado Pago
+const client = new MercadoPagoConfig({
+  accessToken: "TEST-5671825137719752-090515-ccee7549724eb1f9776d0b0affa84d5b-672353286",
+});
+
+
+const app = express();
+const port = 4000; // Asegúrate de que el puerto sea 4000 o el que necesites
+
+app.use(cors());
+app.use(express.json());
+
+app.get("/mercadopago", (req, res) => {
+  res.send("soy el servidor :)");
+});
+
+
+// Ruta para crear una preferencia de pago
+app.post("/create_preference", async (req, res) => {
+  try {
+    const body = {
+      items: [
+        {
+          title: req.body.title,
+          quantity: Number(req.body.quantity),
+          unit_price: Number(req.body.price),
+        },
+      ],
+      back_urls: {
+        success: "https://b260-2806-2f0-55e1-e409-389e-7ac6-6d66-4032.ngrok-free.app/AulaInteractiva",
+        failure: "https://b260-2806-2f0-55e1-e409-389e-7ac6-6d66-4032.ngrok-free.app/Caja",
+        pending: "https://b260-2806-2f0-55e1-e409-389e-7ac6-6d66-4032.ngrok-free.app/login",
+      },
+      auto_return: "approved",
+    };
+
+    const preference = new Preference(client);
+    const result = await preference.create({ body });
+    res.json({
+      id: result.id,
+    });
+  } catch (error) {
+    console.error("Error al crear la preferencia:", error.response ? error.response.data : error.message);
+    res.status(500).send("Error al crear la preferencia");
+  }
+});
+
+
+// Iniciar el servidor
+app.listen(port, () => {
+  console.log(`El servidor corre en el puerto ${port}`);
+});*/

@@ -1,20 +1,4 @@
-/*import React from 'react';
-import './IndicadoresDeStock.css';
-import { Link } from 'react-router-dom';
 
-const IndicadoresDeStock = () => {
-    return (
-        <>
-            <h1>Indicadores De Stock</h1>
-            <div className="buttons-container">
-                
-            </div>
-        </>
-    );
-};
-
-export default IndicadoresDeStock;
-*/
 
 import React, { useEffect, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';

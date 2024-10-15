@@ -55,12 +55,19 @@ const RegisterForm = () => {
           <input type="text" name="nombre" placeholder="Nombre o nombres" onChange={handleChange} />
           <input type="text" name="apellidoPaterno" placeholder="Apellido Paterno" onChange={handleChange} />
           <input type="text" name="apellidoMaterno" placeholder="Apellido Materno" onChange={handleChange} />
-          <select name="sexo" onChange={handleChange}>
+          {/*<select name="sexo" onChange={handleChange}>
             <option value="" disabled selected>Sexo</option>
             <option value="M">Masculino</option>
             <option value="F">Femenino</option>
             <option value="O">Otro</option>
-          </select>
+  </select>*/}
+  <select name="sexo" value={formData.sexo} onChange={handleChange}>
+  <option value="" disabled>Sexo</option>
+  <option value="M">Masculino</option>
+  <option value="F">Femenino</option>
+  <option value="O">Otro</option>
+</select>
+
           <input type="text" name="curp" placeholder="CURP" onChange={handleChange} />
           <input type="tel" name="telefono" placeholder="Número de teléfono" onChange={handleChange} />
           <input type="email" name="correo" placeholder="Correo" onChange={handleChange} />

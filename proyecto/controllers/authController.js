@@ -43,7 +43,7 @@ const obtenerUltimoIdContrato = () => {
 
 /*-------------------  VALIDACIONES ----------------------------------------------------------------*/
 
-function validarCorreo(correo) {
+ function validarCorreo(correo) {
   return /^[\w.%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(correo) && correo.length <= 100;
 }
 
@@ -127,6 +127,8 @@ function validarPassword(password) {
 
 
 
+
+
 // Función para registrar un nuevo usuario
 exports.register = async (req, res) => {
   const { nombre, apellidoPaterno, apellidoMaterno, sexo, curp, telefono, correo, password, tipo } = req.body;
@@ -207,7 +209,11 @@ exports.register = async (req, res) => {
     console.error(err);
     res.status(500).send('Error en el servidor');
   }
+
+
 };
+
+  
 
 // Función para iniciar sesión
 

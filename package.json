@@ -7,5 +7,15 @@
     "react-router-dom": "^6.23.1",
     "redis": "^4.7.0",
     "socket.io": "^4.7.5"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "^6.5.0",
+    "@testing-library/react": "^16.0.1",
+    "jest": {
+      "transform": {
+        "^.+\\.jsx?$": "babel-jest"
+      }
+    },
+    "supertest": "^7.0.0"
   }
 }
