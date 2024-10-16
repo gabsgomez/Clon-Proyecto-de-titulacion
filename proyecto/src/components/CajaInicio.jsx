@@ -51,8 +51,8 @@ const Caja = () => {
           price: product.price,
         }),
       });
-      const { id } = response.data;
-      setPreferenceId(id);
+      const data = await response.json();
+      setPreferenceId(data.id); // Guarda el ID de la preferencia de Mercado Pago
     } catch (error) {
       console.log(error);
     }
