@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const authController = require('../controllers/authController');
-
 //const authMiddleware = require('../controllers/authMiddleware');
 
 //router.post('/upload', authMiddleware.verifyToken, authController.uploadFiles);
@@ -18,31 +17,10 @@ router.post('/reset-password', authController.resetPassword);
 //lo nuevo
 router.post('/latest-user-type', authController.getLatestUserType);
 //////
-router.post('/loginadministradores', authController.loginadministradores);
+
 
 router.post('/upload', authController.uploadFiles);
 
-// Ruta para obtener todos los precios
-router.get('/precios', authController.getPrecios);
 
-// Ruta para actualizar un precio
-router.put('/precios/:id', authController.updatePrecio);
 
-//Ruta para obtener tipo de usuario
-router.get('/usuarios', authController.getUsuariosPorTipo);
-
-// Ruta para obtener usuarios con filtros de tipo y término de búsqueda
-router.get('/usuarios', authController.getUsuarios);
-
-router.get('/search-users', authController.searchUsers);  // Nueva ruta para búsqueda
-
-///////
-const { uploadDocument } = require('../controllers/authController'); // Importa correctamente
-
-// Ruta para subir documentos
-router.post('/uploadedDocs', uploadDocument);
-
-router.get('/get', authController, getDocumentos);
-router.delete('/delete/:id', authController, deleteDocumentos);
-  
-  module.exports = router;
+module.exports = router;

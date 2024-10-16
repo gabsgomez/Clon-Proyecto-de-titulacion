@@ -82,8 +82,7 @@
 .form-contrasenia,
 .button-iniciar-sesion,
 .button-verificar-codigo,
-.button-restablecer-contrasenia
-{
+.button-restablecer-contrasenia {
     display: flex;
     justify-content: center;
     width: 100%;
@@ -170,9 +169,3 @@
 
 }
 
-.button-admin{
-    display: flex;
-    justify-content: center;
-    width: 100%;
-    margin-right: 13%;
-}

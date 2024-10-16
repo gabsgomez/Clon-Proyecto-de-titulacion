@@ -180,10 +180,6 @@ const SesionForm = () => {
     setStep(1);
   };
 
-  const goToAdminLogin = () => {
-    navigate("/LoginAdministradores"); // Redireccionar al form de administradores
-  };
-
   return (
     <div className="form-containerr">
       <h1>{isPasswordReset ? "Restablecer Contraseña" : "Iniciar Sesión"}</h1>
@@ -287,11 +283,6 @@ const SesionForm = () => {
       <button onClick={togglePasswordReset} className="button-secondary">
         {isPasswordReset ? "Iniciar Sesión" : "Restablecer Contraseña"}
       </button>
-
-      <button onClick={goToAdminLogin} className="button-admin">
-        Administradores
-      </button>
-
     </div>
   );
 };

@@ -20,16 +20,7 @@ function Navbar2() {
         <img src={require('../imagen/ETFlogo.png')} alt="Logo de la empresa" />
       </div>
       <div className={`nav-linkss ${isOpen ? 'open' : ''}`}>
-        <div className="dropdown">
-          <Link to="/AulaInteractiva" className="dropdown-toggle">
-          Aula Interactiva
-          </Link>
-          <div className="dropdown-menu">
-            <Link to="/AulaInteractiva">Aula</Link>
-            <Link to="/Documentos">Documentos</Link>
-            <Link to="/Avisos">Avisos</Link>
-          </div>
-        </div>
+        <Link to="/AulaInteractiva">Aula Interactiva</Link>
         <Link to="/Noticias">Noticias</Link>
 
         {/* Indicadores de Stock con Submenú */}
