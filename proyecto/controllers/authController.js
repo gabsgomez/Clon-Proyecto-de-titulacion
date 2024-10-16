@@ -556,7 +556,8 @@ exports.uploadFiles = (req, res) => {
 
 exports.getLatestUserType = async (req, res) => {
   try {
-    const query = 'SELECT Tipo FROM usuario ORDER BY ID_Usuario DESC LIMIT 1';
+    
+    const query = 'SELECT Tipo FROM usuario ORDER BY fecha_creacion DESC LIMIT 1';
     
     // Ejecutar la consulta
     db.query(query, (err, results) => {
@@ -568,6 +569,7 @@ exports.getLatestUserType = async (req, res) => {
       // Si el resultado existe, devolvemos el tipo
       if (results.length > 0) {
         res.json({ tipo: results[0].Tipo });
+        
       } else {
         res.status(404).send('No se encontró ningún usuario');
       }
