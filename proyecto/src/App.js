@@ -1,9 +1,12 @@
 import React from 'react';
 import './App.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap-icons/font/bootstrap-icons.css';
 import Navbar from './components/NavBar';
 import Navbar2 from './components/NavBar2';
+import NavbarAdmin from './components/NavBarAdmin';
 import Footer from './components/Footer';
-import { BrowserRouter as Router, Route, Routes, useLocation,Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, useLocation, Navigate } from 'react-router-dom';
 
 import Inicio from './components/Inicio';
 import Nosotros from './components/Nosotros';
@@ -31,19 +34,32 @@ import PayPal from './components/PayPal';
 
 import CajaInicio from './components/CajaInicio';
 
+import Administradores from './components/administradores';
+import LoginAdministradores from './components/LoginAdministradores';
+
+import AulaInteractivaAdmins from './components/AulaInteractivaAdmins';
+import Alumnos from './components/Alumnos';
+import Documentos from './components/Documentos';
+import DocumentosAdmins from './components/DocumentosAdmins';
+import VideoconferenciasAdmins from './components/VideoconferenciasAdmins';
+
+import Precios from './components/Precios';
+import Finanzas from './components/Finanzas';
 
 
 function MainContent() {
   const location = useLocation();
 
-  const showNavbar = ["/", "/nosotros", "/experiencia", "/cursos", "/register", "/login"];
-  const showNavbar2 = ["/classroom", "/AulaInteractiva", "/Noticias", "/IndicadoresDeStock", "/Caja", "/ChatBot", "/Videoconferencias", "/acciones", "/fondos", "/futuros", "/indices", "/bonos", "/economias"];
-  const showFooter = ["/", "/nosotros", "/experiencia", "/cursos", "/register", "/login", "/classroom", "/AulaInteractiva", "/Noticias", "/IndicadoresDeStock", "/Caja", "/ChatBot", "/Videoconferencias", "/acciones", "/fondos", "/futuros", "/indices", "/bonos", "/economias"];
-
+  const showNavbar = ["/", "/nosotros", "/experiencia", "/cursos", "/register", "/login", "/LoginAdministradores"];
+  const showNavbar2 = ["/classroom", "/AulaInteractiva", "/Documentos", "/Noticias", "/IndicadoresDeStock", "/Caja", "/ChatBot", "/Videoconferencias", "/acciones", "/fondos", "/futuros", "/indices", "/bonos", "/economias"];
+  const showFooter = ["/", "/nosotros", "/experiencia", "/Documentos", "/cursos", "/register", "/login", "/classroom", "/AulaInteractiva", "/Noticias", "/IndicadoresDeStock", "/Caja", "/ChatBot", "/Videoconferencias", "/acciones", "/fondos", "/futuros", "/indices", "/bonos", "/economias"];
+  const showNavBarAdmin = ["/administradores", "/AulaInteractivaAdmins", "/Precios", "/DocumentosAdmins", "/Finanzas", "/Alumnos", "/VideoconferenciasAdmins"];
+  
   return (
     <>
       {showNavbar.includes(location.pathname) && <Navbar />}
       {showNavbar2.includes(location.pathname) && <Navbar2 />}
+      {showNavBarAdmin.includes(location.pathname) && <NavbarAdmin />}
       
       <div className="content">
         <Routes>
@@ -55,6 +71,7 @@ function MainContent() {
           <Route path="/login" element={<SesionForm />} />
           <Route path="/classroom" element={<Classroom />} />
           <Route path="/AulaInteractiva" element={<AulaInteractiva />} />
+          <Route path="/Documentos" element={<Documentos/>} />
           <Route path="/Noticias" element={<Noticias />} />
           <Route path="/IndicadoresDeStock" element={<IndicadoresDeStock />} />
           <Route path="/Caja" element={<Caja />} />
@@ -65,6 +82,8 @@ function MainContent() {
           <Route path="/indices" element={<Indices />} />
           <Route path="/bonos" element={<Bonos />} />
           <Route path="/economias" element={<Economias />} />
+          <Route path="/administradores" element={<Administradores />} />
+          <Route path="/LoginAdministradores" element={<LoginAdministradores />} />
           
           {/* Ruta para la página de videoconferencias */}
           <Route path="/Videoconferencias" element={<Videoconferencias />} />
@@ -75,10 +94,13 @@ function MainContent() {
 
           <Route path="/CajaInicio" element={<CajaInicio/>}/>
           
-
+          <Route path="/AulaInteractivaAdmins" element={<AulaInteractivaAdmins />} />
+          <Route path="/Alumnos" element={<Alumnos />} />
+          <Route path="/DocumentosAdmins" element={<DocumentosAdmins/>} />
+          <Route path="/VideoconferenciasAdmins" element={<VideoconferenciasAdmins />} />
           
-          
-
+          <Route path="/Finanzas" element={<Finanzas />} />
+          <Route path="/Precios" element={<Precios />} />
           
         </Routes>
       </div>
@@ -91,7 +113,7 @@ function MainContent() {
 function App() {
   return (
     <Router>
-      <MainContent />
+        <MainContent />
     </Router>
   );
 }

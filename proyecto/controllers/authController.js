@@ -262,7 +262,7 @@ exports.login = async (req, res) => {
             from: 'a20300685@ceti.mx',
             to: correo,
             subject: 'Código de verificación',
-            text: `Tu código de verificación es: ${verificationCode}`
+            text: ` Tu código de verificación es: ${verificationCode}`
           };
 
           await transporter.sendMail(mailOptions);
@@ -277,6 +277,38 @@ exports.login = async (req, res) => {
 };
 
 
+
+exports.loginadministradores = async (req, res) => {
+  const { id_Administrador, usuario_Administrador } = req.body;
+
+  // Validación de entrada
+  if (!id_Administrador || !usuario_Administrador) {
+    return res.status(400).json({ error: 'Por favor, proporciona ID y usuario' });
+  }
+
+  try {
+    // Consulta para verificar el administrador
+    const adminQuery = 'SELECT * FROM administradores WHERE ID_Administradores = ? AND Usuario_Admin = ?';
+    
+    db.query(adminQuery, [id_Administrador, usuario_Administrador], (err, results) => {
+      if (err) {
+        console.error('Error en la consulta de la base de datos:', err);
+        return res.status(500).json({ error: 'Error en la consulta de la base de datos' });
+      }
+
+      if (results.length === 0) {
+        return res.status(401).json({ error: 'ID o usuario incorrectos' });
+      }
+
+      // Si se encuentra el administrador
+      return res.status(200).json({ message: 'Inicio de sesión exitoso' });
+    });
+
+  } catch (error) {
+    console.error('Error al iniciar sesión:', error);
+    return res.status(500).json({ error: 'Error al iniciar sesión' });
+  }
+};
 
 
 
@@ -524,7 +556,8 @@ exports.uploadFiles = (req, res) => {
 
 exports.getLatestUserType = async (req, res) => {
   try {
-    const query = 'SELECT Tipo FROM usuario ORDER BY ID_Usuario DESC LIMIT 1';
+    
+    const query = 'SELECT Tipo FROM usuario ORDER BY fecha_creacion DESC LIMIT 1';
     
     // Ejecutar la consulta
     db.query(query, (err, results) => {
@@ -536,6 +569,7 @@ exports.getLatestUserType = async (req, res) => {
       // Si el resultado existe, devolvemos el tipo
       if (results.length > 0) {
         res.json({ tipo: results[0].Tipo });
+        
       } else {
         res.status(404).send('No se encontró ningún usuario');
       }
@@ -546,6 +580,161 @@ exports.getLatestUserType = async (req, res) => {
   }
 };
 
+///////////////////////////////////////////////////////////////////
+/*
+// Obtener todos los precios
+exports.getPrecios = async (req, res) => {
+  try {
+    const precios = await pool.query('SELECT * FROM Precios');
+    res.json(precios);
+  } catch (error) {
+    res.status(500).json({ error: 'Error al obtener los precios' });
+  }
+};
 
 
+// Actualizar un precio por ID
+exports.updatePrecio = async (req, res) => {
+  const { id } = req.params;
+  const { price } = req.body;
 
+  try {
+    const result = await pool.query('UPDATE Precios SET price = ? WHERE id = ?', [price, id]);
+    
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'El precio no fue encontrado' });
+    }
+
+    res.json({ message: 'Precio actualizado correctamente' });
+  } catch (error) {
+    res.status(500).json({ error: 'Error al actualizar el precio' });
+  }
+};*/
+
+
+exports.getPrecios = async (req, res) => {
+  try {
+    const query = 'SELECT * FROM precios'; // Asegúrate de que esta tabla exista
+    db.query(query, (err, results) => {
+      if (err) {
+        console.error('Error en la consulta de la base de datos:', err);
+        return res.status(500).json({ error: 'Error en la consulta de la base de datos' });
+      }
+
+      res.status(200).json(results);
+    });
+  } catch (error) {
+    console.error('Error al obtener precios:', error);
+    res.status(500).json({ error: 'Error al obtener precios' });
+  }
+};
+
+/*
+// Actualizar un precio
+exports.updatePrecio = async (req, res) => {
+  const { id } = req.params;
+  const { description, price, tipo } = req.body;
+
+  try {
+    const result = pool.query('UPDATE precios SET description = ?, price = ?, tipo = ? WHERE id = ?', [description, price, tipo, id]);
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'Precio no encontrado' });
+    }
+    res.status(200).json({ message: 'Precio actualizado correctamente' });
+  } catch (error) {
+    console.error('Error al actualizar el precio:', error);
+    res.status(500).json({ error: 'Error al actualizar el precio' });
+  }
+};*/
+
+// Actualizar un precio
+exports.updatePrecio = async (req, res) => {
+  const { id } = req.params;
+  const { price } = req.body; // Solo tomamos el nuevo precio
+
+  try {
+    // Actualizamos solo el campo de precio
+    const result = await pool.query('UPDATE precios SET price = ? WHERE id = ?', [price, id]);
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'Precio no encontrado' });
+    }
+    res.status(200).json({ message: 'Precio actualizado correctamente' });
+  } catch (error) {
+    console.error('Error al actualizar el precio:', error);
+    res.status(500).json({ error: 'Error al actualizar el precio' });
+  }
+};
+
+/////////////////////////////////////////////////
+
+// Obtener usuarios por tipo
+exports.getUsuariosPorTipo = async (req, res) => {
+  const { tipo } = req.query; // Tipo de usuario (Av, P, F, adm)
+
+  try {
+    // Consulta a la base de datos para obtener los usuarios junto con nombres y apellidos correctos
+    const result = await pool.query(`
+      SELECT u.ID_Usuario, u.Correo, u.fecha_creacion, a.Nombres, a.ApellidoPaterno, a.ApellidoMaterno
+      FROM usuario u
+      JOIN alumnos a ON u.ID_Usuario = a.Usuario_Generado
+      WHERE u.Tipo = ?
+    `, [tipo]);
+
+    // Verifica si se encontraron usuarios
+    if (result.length === 0) {
+      return res.status(404).json({ error: 'No se encontraron usuarios para este tipo' });
+    }
+
+    // Retorna los usuarios obtenidos
+    res.status(200).json(result);
+  } catch (error) {
+    console.error('Error al obtener los usuarios:', error);
+    res.status(500).json({ error: 'Error al obtener los usuarios' });
+  }
+};
+
+
+// Controlador para obtener usuarios filtrados por tipo y término de búsqueda
+exports.getUsuarios = async (req, res) => {
+  try {
+    const { tipo, searchTerm } = req.query;
+
+    // Construcción dinámica de la consulta SQL
+    let query = "SELECT ID_Usuario, Nombres, ApellidoPaterno, ApellidoMaterno, Correo, fecha_creacion FROM usuario WHERE 1=1";
+
+    // Filtro por tipo de usuario (si se proporciona)
+    if (tipo) {
+      query += ` AND Tipo = '${tipo}'`;
+    }
+
+    // Filtro por nombre o apellido (si se proporciona un término de búsqueda)
+    if (searchTerm) {
+      query += ` AND (Nombres LIKE '%${searchTerm}%' OR ApellidoPaterno LIKE '%${searchTerm}%' OR ApellidoMaterno LIKE '%${searchTerm}%')`;
+    }
+
+    const [results] = await db.query(query);
+    res.status(200).json(results);
+  } catch (error) {
+    console.error('Error al obtener usuarios:', error);
+    res.status(500).json({ message: 'Error al obtener los usuarios' });
+  }
+};
+
+
+exports.searchUsers = async (req, res) => {
+  const { searchTerm } = req.query;
+  if (!searchTerm) {
+      return res.status(400).json({ message: 'Falta el parámetro searchTerm' });
+  }
+  try {
+      const usuarios = await Usuario.find({ 
+          $or: [
+              { nombre: { $regex: searchTerm, $options: 'i' } },
+              { apellido: { $regex: searchTerm, $options: 'i' } }
+          ]
+      });
+      res.status(200).json(usuarios);
+  } catch (error) {
+      res.status(500).json({ message: 'Error al buscar usuarios' });
+  }
+};

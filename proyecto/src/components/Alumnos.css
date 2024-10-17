@@ -1,0 +1,166 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+/* Estilos generales */
+.alumnos-container {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    background-color: #e0f7fa;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  h1, h2 {
+    text-align: center;
+    color: #333;
+  }
+  
+  /* Estilos de los botones */
+  .botones-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  
+  button {
+    background-color: #00695c;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+  }
+  
+  button:hover {
+    background-color: #004d40;
+  }
+  
+  /* Tabla */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background-color: white;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  
+  th, td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  th {
+    background-color: #004d40;
+    color: white;
+  }
+  
+  td {
+    font-size: 0.9rem;
+    color: #333;
+  }
+  
+  tbody tr:nth-child(even) {
+    background-color: #f2f2f2;
+  }
+  
+  /* Estilos Responsivos */
+  @media (max-width: 768px) {
+    .alumnos-container {
+      padding: 10px;
+    }
+  
+    button {
+      width: 100%;
+      padding: 12px;
+      font-size: 1.2rem;
+    }
+  
+    table {
+      font-size: 0.9rem;
+    }
+  
+    th, td {
+      padding: 8px;
+    }
+  
+    .botones-container {
+      flex-direction: column;
+      gap: 15px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .alumnos-container {
+      padding: 5px;
+    }
+  
+    h1, h2 {
+      font-size: 1.5rem;
+    }
+  
+    th, td {
+      font-size: 0.8rem;
+      padding: 6px;
+    }
+  
+    button {
+      font-size: 1rem;
+      padding: 10px;
+    }
+  
+    /* Tabla responsive con scroll */
+    .alumnos-container table {
+      display: block;
+      width: 100%;
+      overflow-x: auto;  /* Permite hacer scroll horizontal */
+      white-space: nowrap;
+    }
+  
+    .alumnos-container th, 
+    .alumnos-container td {
+      display: block;
+      text-align: right;
+      padding: 8px;
+    }
+  
+    .alumnos-container th::before {
+      content: attr(data-label); /* Coloca el encabezado de la tabla antes del contenido */
+      float: left;
+      font-weight: bold;
+    }
+  
+    .alumnos-container td::before {
+      content: attr(data-label);
+      float: left;
+      font-weight: bold;
+    }
+  
+    /* Ajuste de botones */
+    .botones-container {
+      flex-direction: column;
+      gap: 10px;
+    }
+  
+    /* Mejora del espaciado y alineación en pantallas pequeñas */
+    td {
+      text-align: right;
+      padding: 8px;
+    }
+  
+    tbody tr {
+      display: block;
+      margin-bottom: 10px;
+      border: 1px solid #ddd;
+    }
+  
+    th, td {
+      display: block;
+      width: 100%;
+    }
+  }
+  

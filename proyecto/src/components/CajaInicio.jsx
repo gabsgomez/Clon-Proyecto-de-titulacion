@@ -1,20 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { initMercadoPago, Wallet } from "@mercadopago/sdk-react";
-import axios from "axios";
 import { loadStripe } from "@stripe/stripe-js";
 
-// Lista de productos
-const products = [
-  { id: 1, description: "Curso de principiantes.", price: "24000.00", tipo: "P" },
-  { id: 2, description: "Curso avanzado.", price: "45000.00", tipo: "Av" },
-  { id: 3, description: "Asesoría financiera personalizada.", price: "7000.00", tipo: "F" },
-];
-
 const Caja = () => {
+  const [precios, setPrecios] = useState([]); // Almacenar los productos de la base de datos
   const [preferenceId, setPreferenceId] = useState(null);
   const [selectedProduct, setSelectedProduct] = useState(null); // Producto seleccionado inicialmente nulo
-  const [userType, setUserType] = useState(""); // Tipo del usuario
   const navigate = useNavigate();
 
   // Inicializa Mercado Pago
@@ -22,35 +14,42 @@ const Caja = () => {
     locale: "es-MX",
   });
 
-  // Función para obtener el tipo de usuario más reciente desde el backend
+  // Obtener productos desde la base de datos usando Fetch
   useEffect(() => {
-    const fetchUserType = async () => {
+    const fetchPrecios = async () => {
       try {
-        // Llamada al backend para obtener el tipo de usuario más reciente
-        const response = await axios.get("http://localhost:5000/api/latest-user-type");
-        setUserType(response.data.tipo); // Guarda el tipo de usuario
+        // Llamada a la API para obtener los precios con Fetch
+        const response = await fetch("http://localhost:5000/api/auth/precios");
+        const data = await response.json();
+        setPrecios(data); // Almacena los productos en el estado
 
-        // Establece el producto predeterminado basado en el tipo de usuario
-        const defaultProduct = products.find(product => product.tipo === response.data.tipo);
-        setSelectedProduct(defaultProduct); // Asigna el producto predeterminado según el tipo de usuario
+        // Selecciona automáticamente el primer producto si no hay ninguno seleccionado
+        if (data.length > 0) {
+          setSelectedProduct(data[0]); // Selecciona el primer producto
+        }
+
+        console.log("Productos obtenidos:", data); // Verificación
       } catch (error) {
-        console.error("Error al obtener el tipo de usuario:", error);
+        console.error("Error al obtener los precios desde la base de datos:", error);
       }
     };
 
-    fetchUserType(); // Obtiene el tipo de usuario más reciente al cargar el componente
-  }, []); // Vacío para ejecutarse solo al cargar el componente por primera vez
-
-  // Verifica que el producto esté seleccionado correctamente
-  console.log("userType:", userType); 
-  console.log("selectedProduct:", selectedProduct);
+    fetchPrecios(); // Llama a la función al cargar el componente
+  }, []);
 
   const createPreference = async (product) => {
     try {
-      const response = await axios.post("http://localhost:4000/create_preference", {
-        title: product.description,
-        quantity: 1,
-        price: product.price,
+      // Usamos Fetch para crear la preferencia de pago
+      const response = await fetch("http://localhost:4000/create_preference", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          title: product.description,
+          quantity: 1,
+          price: product.price,
+        }),
       });
       const { id } = response.data;
       setPreferenceId(id);
@@ -58,8 +57,6 @@ const Caja = () => {
       console.log(error);
     }
   };
-
-
 
   const handleBuy = async () => {
     if (selectedProduct) {
@@ -85,7 +82,15 @@ const Caja = () => {
       ];
 
       try {
-        const { data } = await axios.post("http://localhost:3001/checkout", { lineItems });
+        // Usamos Fetch para la solicitud de checkout
+        const response = await fetch("http://localhost:3001/checkout", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ lineItems }),
+        });
+        const data = await response.json();
         const stripe = await stripePromise;
         const { error } = await stripe.redirectToCheckout({
           sessionId: data.id,
@@ -107,19 +112,18 @@ const Caja = () => {
         <select
           className="select-a-pagar"
           onChange={(e) => {
-            const product = products.find((p) => p.id === parseInt(e.target.value));
+            const product = precios.find((p) => p.id === parseInt(e.target.value));
             setSelectedProduct(product); // Actualiza el producto seleccionado
             setPreferenceId(null); // Reinicia el preferenceId si se cambia el producto
           }}
           value={selectedProduct ? selectedProduct.id : ""}
         >
-          {products
-            .filter((product) => product.tipo === userType) // Solo muestra productos relacionados con el tipo de usuario
-            .map((product) => (
-              <option key={product.id} value={product.id}>
-                {product.description}
-              </option>
-            ))}
+          {/* Muestra todos los productos disponibles */}
+          {precios.map((product) => (
+            <option key={product.id} value={product.id}>
+              {product.description}
+            </option>
+          ))}
         </select>
 
         <div>
@@ -149,4 +153,3 @@ const Caja = () => {
 };
 
 export default Caja;
-
