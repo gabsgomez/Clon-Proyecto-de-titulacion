@@ -31,6 +31,7 @@ function NavbarAdmin() {
             <Link to="/Formularios">Formularios</Link>
             <Link to="/Actividades">Actividades</Link>
             <Link to="/DocumentosAdmins">Documentos</Link>
+            <Link to="/Habilitacion">Habilitación</Link>
           </div>
         </div>
 

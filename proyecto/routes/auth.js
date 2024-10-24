@@ -35,5 +35,24 @@ router.get('/usuarios', authController.getUsuariosPorTipo);
 //router.get('/usuarios', authController.getUsuarios);
 
 router.get('/search-users', authController.searchUsers);  // Nueva ruta para búsqueda
-  
+
+// Ruta para obtener los pagos filtrados por temporalidad
+router.get('/finanzas', authController.getFinanzas);
+
+router.get('/finanzas/semanal', authController.getFinanzasSemanal);
+router.get('/finanzas/mensual', authController.getFinanzasMensual);
+router.get('/finanzas/semestral', authController.getFinanzasSemestral);
+
+// Definición de las rutas para los estatus de los usuarios
+router.get('/usuarios/estatus/:estatus', authController.getUsuariosPorEstatus);
+
+// Ruta para habilitar un usuario
+router.put('/usuarios/habilitar/:id', authController.habilitarUsuario);
+
+// Ruta para deshabilitar un usuario
+router.put('/usuarios/deshabilitar/:id', authController.deshabilitarUsuario);
+
+router.get('/etiquetas/generaciones', authController.obtenerGeneraciones);
+router.post('/etiquetas/crear', authController.crearGeneracion);
+
 module.exports = router;

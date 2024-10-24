@@ -33,7 +33,6 @@ app.use('/api/auth', authRoutes);
 // Obtener el tipo de usuario más reciente
 app.get('/api/latest-user-type', authController.getLatestUserType);
 
-<<<<<<< HEAD
 const axios = require('axios');
 
 // Endpoint para el webhook de PayPal
@@ -157,9 +156,6 @@ async function getPayPalAccessToken() {
         throw error;
     }
 }
-=======
-
->>>>>>> 665067c7aa33f4b3af18f53ea063f64c8b956301
 
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {

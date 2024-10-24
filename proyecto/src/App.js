@@ -46,6 +46,8 @@ import VideoconferenciasAdmins from './components/VideoconferenciasAdmins';
 import Precios from './components/Precios';
 import Finanzas from './components/Finanzas';
 
+import Habilitacion from './components/Habilitacion';
+import Etiquetas from './components/Etiquetas';
 
 function MainContent() {
   const location = useLocation();
@@ -53,7 +55,7 @@ function MainContent() {
   const showNavbar = ["/", "/nosotros", "/experiencia", "/cursos", "/register", "/login", "/LoginAdministradores"];
   const showNavbar2 = ["/classroom", "/AulaInteractiva", "/Documentos", "/Noticias", "/IndicadoresDeStock", "/Caja", "/ChatBot", "/Videoconferencias", "/acciones", "/fondos", "/futuros", "/indices", "/bonos", "/economias"];
   const showFooter = ["/", "/nosotros", "/experiencia", "/Documentos", "/cursos", "/register", "/login", "/classroom", "/AulaInteractiva", "/Noticias", "/IndicadoresDeStock", "/Caja", "/ChatBot", "/Videoconferencias", "/acciones", "/fondos", "/futuros", "/indices", "/bonos", "/economias"];
-  const showNavBarAdmin = ["/administradores", "/AulaInteractivaAdmins", "/Precios", "/DocumentosAdmins", "/Finanzas", "/Alumnos", "/VideoconferenciasAdmins"];
+  const showNavBarAdmin = ["/administradores", "/Etiquetas","/AulaInteractivaAdmins", "/Habilitacion", "/Precios", "/DocumentosAdmins", "/Finanzas", "/Alumnos", "/VideoconferenciasAdmins"];
   
   return (
     <>
@@ -101,6 +103,8 @@ function MainContent() {
           
           <Route path="/Finanzas" element={<Finanzas />} />
           <Route path="/Precios" element={<Precios />} />
+          <Route path="/Habilitacion" element={<Habilitacion />} />
+          <Route path="/Etiquetas" element={<Etiquetas />} />
           
         </Routes>
       </div>

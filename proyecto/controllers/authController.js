@@ -277,7 +277,7 @@ exports.login = async (req, res) => {
 };
 
 
-
+///DEBO CAMBIAR EL METODO DE LOGIN
 exports.loginadministradores = async (req, res) => {
   const { id_Administrador, usuario_Administrador } = req.body;
 
@@ -629,24 +629,6 @@ exports.getPrecios = async (req, res) => {
   }
 };
 
-/*
-// Actualizar un precio
-exports.updatePrecio = async (req, res) => {
-  const { id } = req.params;
-  const { description, price, tipo } = req.body;
-
-  try {
-    const result = pool.query('UPDATE precios SET description = ?, price = ?, tipo = ? WHERE id = ?', [description, price, tipo, id]);
-    if (result.affectedRows === 0) {
-      return res.status(404).json({ error: 'Precio no encontrado' });
-    }
-    res.status(200).json({ message: 'Precio actualizado correctamente' });
-  } catch (error) {
-    console.error('Error al actualizar el precio:', error);
-    res.status(500).json({ error: 'Error al actualizar el precio' });
-  }
-};*/
-
 // Actualizar un precio
 exports.updatePrecio = async (req, res) => {
   const { id } = req.params;
@@ -693,34 +675,6 @@ exports.getUsuariosPorTipo = async (req, res) => {
   }
 };
 
-
-// Controlador para obtener usuarios filtrados por tipo y término de búsqueda
-exports.getUsuarios = async (req, res) => {
-  try {
-    const { tipo, searchTerm } = req.query;
-
-    // Construcción dinámica de la consulta SQL
-    let query = "SELECT ID_Usuario, Nombres, ApellidoPaterno, ApellidoMaterno, Correo, fecha_creacion FROM usuario WHERE 1=1";
-
-    // Filtro por tipo de usuario (si se proporciona)
-    if (tipo) {
-      query += ` AND Tipo = '${tipo}'`;
-    }
-
-    // Filtro por nombre o apellido (si se proporciona un término de búsqueda)
-    if (searchTerm) {
-      query += ` AND (Nombres LIKE '%${searchTerm}%' OR ApellidoPaterno LIKE '%${searchTerm}%' OR ApellidoMaterno LIKE '%${searchTerm}%')`;
-    }
-
-    const [results] = await db.query(query);
-    res.status(200).json(results);
-  } catch (error) {
-    console.error('Error al obtener usuarios:', error);
-    res.status(500).json({ message: 'Error al obtener los usuarios' });
-  }
-};
-
-
 exports.searchUsers = async (req, res) => {
   const { searchTerm } = req.query;
   if (!searchTerm) {
@@ -736,5 +690,227 @@ exports.searchUsers = async (req, res) => {
       res.status(200).json(usuarios);
   } catch (error) {
       res.status(500).json({ message: 'Error al buscar usuarios' });
+  }
+};
+
+
+/// FINANZAS CONSULTA ///
+// Consulta para obtener todos los datos de finanzas
+/* ESTE SI FUNCIONA PERO LO COMENTE PARA PROBAR OTRO METODO
+exports.getFinanzas = async (req, res) => {
+  try {
+    const query = `
+      SELECT c.ID_Pago, c.Metodo_Pago, c.Monto, c.Fecha_De_Pago, c.Estado_Pago,
+             a.Nombres, a.ApellidoPaterno, a.ApellidoMaterno 
+      FROM caja c 
+      JOIN alumnos a ON c.Alumno = a.ID_Alumno
+    `;
+
+    db.query(query, (err, results) => {
+      if (err) {
+        console.error('Error en la consulta de finanzas:', err);
+        return res.status(500).json({ error: 'Error en la consulta de finanzas' });
+      }
+
+      // Devolver los resultados como JSON
+      res.status(200).json(results);
+    });
+  } catch (error) {
+    console.error('Error al obtener datos de finanzas:', error);
+    res.status(500).json({ error: 'Error al obtener datos de finanzas' });
+  }
+};
+*/
+
+// Reporte Completo (ya existe)
+exports.getFinanzas = async (req, res) => {
+  try {
+    const query = `
+      SELECT c.ID_Pago, c.Metodo_Pago, c.Monto, c.Fecha_De_Pago, c.Estado_Pago,
+             a.Nombres, a.ApellidoPaterno, a.ApellidoMaterno 
+      FROM caja c 
+      JOIN alumnos a ON c.Alumno = a.ID_Alumno
+    `;
+    db.query(query, (err, results) => {
+      if (err) {
+        console.error('Error en la consulta de finanzas:', err);
+        return res.status(500).json({ error: 'Error en la consulta de finanzas' });
+      }
+      res.status(200).json(results);
+    });
+  } catch (error) {
+    console.error('Error al obtener datos de finanzas:', error);
+    res.status(500).json({ error: 'Error al obtener datos de finanzas' });
+  }
+};
+
+// Reporte Semanal
+exports.getFinanzasSemanal = async (req, res) => {
+  try {
+    const query = `
+      SELECT c.ID_Pago, c.Metodo_Pago, c.Monto, c.Fecha_De_Pago, c.Estado_Pago,
+             a.Nombres, a.ApellidoPaterno, a.ApellidoMaterno 
+      FROM caja c 
+      JOIN alumnos a ON c.Alumno = a.ID_Alumno
+      WHERE c.Fecha_De_Pago BETWEEN CURDATE() - INTERVAL 7 DAY AND CURDATE()
+    `;
+    db.query(query, (err, results) => {
+      if (err) {
+        console.error('Error en la consulta de finanzas semanal:', err);
+        return res.status(500).json({ error: 'Error en la consulta de finanzas semanal' });
+      }
+      res.status(200).json(results);
+    });
+  } catch (error) {
+    console.error('Error al obtener datos de finanzas semanal:', error);
+    res.status(500).json({ error: 'Error al obtener datos de finanzas semanal' });
+  }
+};
+
+// Reporte Mensual
+exports.getFinanzasMensual = async (req, res) => {
+  try {
+    const query = `
+      SELECT c.ID_Pago, c.Metodo_Pago, c.Monto, c.Fecha_De_Pago, c.Estado_Pago,
+             a.Nombres, a.ApellidoPaterno, a.ApellidoMaterno 
+      FROM caja c 
+      JOIN alumnos a ON c.Alumno = a.ID_Alumno
+      WHERE c.Fecha_De_Pago BETWEEN CURDATE() - INTERVAL 1 MONTH AND CURDATE()
+    `;
+    db.query(query, (err, results) => {
+      if (err) {
+        console.error('Error en la consulta de finanzas mensual:', err);
+        return res.status(500).json({ error: 'Error en la consulta de finanzas mensual' });
+      }
+      res.status(200).json(results);
+    });
+  } catch (error) {
+    console.error('Error al obtener datos de finanzas mensual:', error);
+    res.status(500).json({ error: 'Error al obtener datos de finanzas mensual' });
+  }
+};
+
+// Reporte Semestral
+exports.getFinanzasSemestral = async (req, res) => {
+  try {
+    const query = `
+      SELECT c.ID_Pago, c.Metodo_Pago, c.Monto, c.Fecha_De_Pago, c.Estado_Pago,
+             a.Nombres, a.ApellidoPaterno, a.ApellidoMaterno 
+      FROM caja c 
+      JOIN alumnos a ON c.Alumno = a.ID_Alumno
+      WHERE c.Fecha_De_Pago BETWEEN CURDATE() - INTERVAL 6 MONTH AND CURDATE()
+    `;
+    db.query(query, (err, results) => {
+      if (err) {
+        console.error('Error en la consulta de finanzas semestral:', err);
+        return res.status(500).json({ error: 'Error en la consulta de finanzas semestral' });
+      }
+      res.status(200).json(results);
+    });
+  } catch (error) {
+    console.error('Error al obtener datos de finanzas semestral:', error);
+    res.status(500).json({ error: 'Error al obtener datos de finanzas semestral' });
+  }
+};
+
+
+//////////////////////
+
+// Obtener usuarios por estatus
+exports.getUsuariosPorEstatus = async (req, res) => {
+  const { estatus } = req.params; // Primer Ingreso, Habilitado, Deshabilitado
+
+  try {
+    // Consulta a la base de datos para obtener los usuarios con el estatus correspondiente
+    const result = await pool.query(
+      `SELECT u.ID_Usuario, u.Correo, u.Tipo, u.fecha_creacion, a.Nombres, a.ApellidoPaterno, a.ApellidoMaterno
+      FROM usuario u
+      JOIN alumnos a ON u.ID_Usuario = a.Usuario_Generado
+      WHERE u.Estatus = ?`, [estatus]);
+
+    // Verifica si se encontraron usuarios
+    if (result.length === 0) {
+      return res.status(404).json({ error: 'No se encontraron usuarios para este estatus' });
+    }
+
+    // Retorna los usuarios obtenidos
+    res.status(200).json(result);
+  } catch (error) {
+    console.error('Error al obtener los usuarios por estatus:', error);
+    res.status(500).json({ error: 'Error al obtener los usuarios' });
+  }
+};
+
+
+// Habilitar usuario
+exports.habilitarUsuario = async (req, res) => {
+  const { id } = req.params; // ID del usuario a habilitar
+
+  try {
+    // Actualiza el estatus del usuario a 'Habilitado'
+    await pool.query("UPDATE Usuario SET Estatus = 'Habilitado' WHERE ID_Usuario = ?", [id]);
+
+    res.status(200).json({ message: 'Usuario habilitado correctamente' });
+  } catch (error) {
+    console.error('Error al habilitar usuario:', error);
+    res.status(500).json({ error: 'Error al habilitar usuario' });
+  }
+};
+
+// Deshabilitar usuario
+exports.deshabilitarUsuario = async (req, res) => {
+  const { id } = req.params; // ID del usuario a deshabilitar
+
+  try {
+    // Actualiza el estatus del usuario a 'Deshabilitado'
+    await pool.query("UPDATE Usuario SET Estatus = 'Deshabilitado' WHERE ID_Usuario = ?", [id]);
+
+    res.status(200).json({ message: 'Usuario deshabilitado correctamente' });
+  } catch (error) {
+    console.error('Error al deshabilitar usuario:', error);
+    res.status(500).json({ error: 'Error al deshabilitar usuario' });
+  }
+};
+
+
+exports.obtenerGeneraciones = async (req, res) => {
+  try {
+    const result = await pool.query('SELECT ID_Generacion FROM manejados ORDER BY ID_Generacion');
+    res.status(200).json(result);
+  } catch (error) {
+    console.error('Error al obtener generaciones:', error);
+    res.status(500).json({ error: 'Error al obtener generaciones' });
+  }
+};
+
+exports.crearGeneracion = async (req, res) => {
+  const { ID_Generacion, alumnos, Administrador } = req.body; // Recibir alumnos y administrador
+
+  // Validar cantidad de alumnos
+  if (alumnos.length < 7 || alumnos.length > 32) {
+    return res.status(400).json({ message: 'La generación debe tener entre 8 y 32 alumnos.' });
+  }
+
+  try {
+    // Empezar una transacción para asegurar que todas las inserciones se hagan correctamente
+    await pool.query('START TRANSACTION');
+
+    // Insertar cada alumno en la generación
+    for (let alumno of alumnos) {
+      await pool.query(
+        'INSERT INTO manejados (ID_Generacion, Administrador, ID_Alumno) VALUES (?, ?, ?)',
+        [ID_Generacion, Administrador, alumno]
+      );
+    }
+
+    // Si todo fue bien, se hace el commit
+    await pool.query('COMMIT');
+    res.status(201).json({ message: 'Generación creada correctamente.' });
+
+  } catch (error) {
+    // Si hubo un error, se hace un rollback
+    await pool.query('ROLLBACK');
+    console.error('Error al crear generación:', error);
+    res.status(500).json({ error: 'Error al crear generación' });
   }
 };
