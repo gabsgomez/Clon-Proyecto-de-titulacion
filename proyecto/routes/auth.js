@@ -55,4 +55,14 @@ router.put('/usuarios/deshabilitar/:id', authController.deshabilitarUsuario);
 router.get('/etiquetas/generaciones', authController.obtenerGeneraciones);
 router.post('/etiquetas/crear', authController.crearGeneracion);
 
+router.get('/etiquetas/ultima-generacion', async (req, res) => {
+    try {
+      const ultimaGeneracion = await authController.obtenerUltimaGeneracion();
+      res.status(200).json({ ultimaGeneracion });
+    } catch (error) {
+      res.status(500).json({ error: 'Error al obtener la última generación' });
+    }
+  });
+  
+
 module.exports = router;

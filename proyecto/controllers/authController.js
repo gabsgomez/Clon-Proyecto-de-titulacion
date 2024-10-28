@@ -875,7 +875,7 @@ exports.deshabilitarUsuario = async (req, res) => {
 
 exports.obtenerGeneraciones = async (req, res) => {
   try {
-    const result = await pool.query('SELECT ID_Generacion FROM manejados ORDER BY ID_Generacion');
+    const result = await pool.query('SELECT DISTINCT Nombre_Gen FROM manejados ORDER BY ID_Generacion');
     res.status(200).json(result);
   } catch (error) {
     console.error('Error al obtener generaciones:', error);
@@ -883,34 +883,96 @@ exports.obtenerGeneraciones = async (req, res) => {
   }
 };
 
-exports.crearGeneracion = async (req, res) => {
-  const { ID_Generacion, alumnos, Administrador } = req.body; // Recibir alumnos y administrador
+/*
+FUNCIONA A MEDIAS, NO LO BORRO PORQUE SIRVE COMO REFERENCIA Y QUIZAS LO OCUPE
 
-  // Validar cantidad de alumnos
-  if (alumnos.length < 7 || alumnos.length > 32) {
-    return res.status(400).json({ message: 'La generación debe tener entre 8 y 32 alumnos.' });
+exports.crearGeneracion = async (req, res) => {
+  const { Nombre_Gen, Administrador, alumnos } = req.body;
+  
+  // Verifica que el número de alumnos esté dentro del rango permitido
+  if (alumnos.length < 8 || alumnos.length > 32) {
+    return res.status(400).json({ error: 'El número de alumnos debe estar entre 8 y 32' });
   }
 
+  // Inicia una transacción
+  await pool.query('START TRANSACTION');
+  
   try {
-    // Empezar una transacción para asegurar que todas las inserciones se hagan correctamente
-    await pool.query('START TRANSACTION');
+    // Insertar cada alumno en la tabla manejados
+    const values = alumnos.map((idAlumno) => ('${Nombre_Gen}', '${Administrador}', '${idAlumno}')).join(", ");
+    
+    const insertQuery = `
+      INSERT INTO manejados (Nombre_Gen, Administrador, ID_Alumno)
+      VALUES ${values};
+      `
+    ;
+    
+    await pool.query(insertQuery);
 
-    // Insertar cada alumno en la generación
-    for (let alumno of alumnos) {
-      await pool.query(
-        'INSERT INTO manejados (ID_Generacion, Administrador, ID_Alumno) VALUES (?, ?, ?)',
-        [ID_Generacion, Administrador, alumno]
-      );
-    }
-
-    // Si todo fue bien, se hace el commit
+    // Finalizar la transacción
     await pool.query('COMMIT');
-    res.status(201).json({ message: 'Generación creada correctamente.' });
-
+    res.status(200).json({ message: 'Generación creada exitosamente' });
   } catch (error) {
-    // Si hubo un error, se hace un rollback
+    // En caso de error, hacer rollback
     await pool.query('ROLLBACK');
-    console.error('Error al crear generación:', error);
+    console.error("Error al crear generación:", error);
     res.status(500).json({ error: 'Error al crear generación' });
+  }
+};
+
+*/
+
+exports.crearGeneracion = async (req, res) => {
+  const { Nombre_Gen, Administrador, alumnos } = req.body;
+
+  // Construye los valores a insertar
+  const valores = alumnos
+    .map(idAlumno => `('${Nombre_Gen}', ${Administrador}, ${idAlumno})`)
+    .join(', ');
+
+  const sql = `
+    INSERT INTO manejados (Nombre_Gen, Administrador, ID_Alumno)
+    VALUES ${valores};
+  `;
+
+  try {
+    await pool.query(sql);
+    res.status(200).json({ message: 'Generación creada exitosamente' });
+  } catch (error) {
+    console.error("Error al crear generación:", error);
+    res.status(500).json({ message: 'Error al crear la generación' });
+  }
+};
+
+
+// Función para obtener el nombre de la última generación en orden alfabético
+exports.obtenerUltimaGeneracion = async () => {
+  try {
+    const result = await pool.query('SELECT Nombre_Gen FROM manejados ORDER BY ID_Generacion DESC LIMIT 1');
+    return result[0]?.Nombre_Gen || null;  // Devuelve el nombre de la última generación o null si no existe
+  } catch (error) {
+    console.error('Error al obtener la última generación:', error);
+    throw error;
+  }
+};
+
+// Función para validar la nueva generación en orden alfabético
+exports.validarNuevaGeneracion = async () => {
+  try {
+    const ultimaGeneracion = await obtenerUltimaGeneracion();
+    
+    if (!ultimaGeneracion) return 'A';  // Si no hay generación previa, empieza con "A"
+    
+    const siguienteGeneracion = String.fromCharCode(ultimaGeneracion.charCodeAt(0) + 1);
+    
+    // Si llegamos a "Z", reiniciamos en "A"
+    if (siguienteGeneracion > 'Z') {
+      return 'A';
+    } else {
+      return siguienteGeneracion;
+    }
+  } catch (error) {
+    console.error('Error en la validación de la nueva generación:', error);
+    throw error;
   }
 };
