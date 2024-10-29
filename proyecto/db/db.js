@@ -1,4 +1,4 @@
-const mysql = require("mysql2");
+const mysql = require("mysql");
 const util = require("util");
 
 const pool = mysql.createPool({
@@ -7,27 +7,24 @@ const pool = mysql.createPool({
   user: "root",
   password: "",
   database: "marathon_institudee",
-  reconnect: true,
+  waitForConnections: true,
+  queueLimit: 0
 });
 
+// Promisify para usar async/await
+pool.getConnection = util.promisify(pool.getConnection);
 pool.query = util.promisify(pool.query);
 
 const checkDatabaseConnection = async () => {
   try {
-    const connection = await new Promise((resolve, reject) => {
-      pool.getConnection((err, connection) => {
-        if (err) reject(err);
-        resolve(connection);
-      });
-    });
-
+    const connection = await pool.getConnection();
+    
     console.log("✅ Conexión exitosa a la base de datos MySQL");
     console.log(`📊 Base de datos: ${pool.config.connectionConfig.database}`);
     console.log(`👤 Usuario: ${pool.config.connectionConfig.user}`);
     console.log(`🔌 Host: ${pool.config.connectionConfig.host}`);
 
-    await pool.query("SELECT 1");
-
+    await connection.query("SELECT 1");
     connection.release();
     return true;
   } catch (error) {
@@ -42,7 +39,8 @@ const checkDatabaseConnection = async () => {
   }
 };
 
-pool.on("connection", (connection) => {
+// Manejo de eventos del pool
+pool.on("connection", () => {
   console.log("🔗 Nueva conexión establecida con la base de datos");
 });
 
@@ -50,6 +48,7 @@ pool.on("error", (err) => {
   console.error("❌ Error en el pool de conexiones:", err.message);
 });
 
+// Iniciar verificación de conexión
 checkDatabaseConnection();
 
 module.exports = pool;

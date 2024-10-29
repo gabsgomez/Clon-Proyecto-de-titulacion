@@ -1,8 +1,6 @@
 import express from "express";
 import cors from "cors";
 
-
-
 // Configura las credenciales de Mercado Pago
 
 // SDK de Mercado Pago
@@ -48,20 +46,17 @@ app.post("/create_preference", async (req, res) => {
       id: result.id,
     });
   } catch (error) {
-    console.error("Error al crear la preferencia:", error.response ? error.response.data : error.message);
+    console.error(
+      "Error al crear la preferencia:",
+      error.response ? error.response.data : error.message,
+    );
 
     res.status(500).send("Error al crear la preferencia");
   }
 });
 
-
-
 app.listen(port, () => {
   console.log(`El servidor corre en el puerto ${port}`);
 });
 
-
 ///////////////////////////////////////////////////////////////
-
-
-

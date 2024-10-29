@@ -1,9 +1,76 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import "./NavBar.jsx";
+import {
+  Document,
+  Page,
+  Text,
+  View,
+  PDFDownloadLink,
+  StyleSheet,
+  Font,
+} from "@react-pdf/renderer";
+
+const styles = StyleSheet.create({
+  page: {
+    padding: 30,
+  },
+  title: {
+    fontSize: 24,
+    marginBottom: 20,
+    textAlign: "center",
+  },
+  header: {
+    fontSize: 14,
+    marginBottom: 20,
+  },
+  question: {
+    marginBottom: 15,
+  },
+  questionText: {
+    fontSize: 12,
+    marginBottom: 10,
+  },
+  option: {
+    fontSize: 10,
+    marginLeft: 20,
+    marginBottom: 5,
+  },
+});
+
+const QuestionsPDF = ({ data }) => (
+  <Document>
+    <Page size="A4" style={styles.page}>
+      <Text style={styles.title}>Cuestionario de Finanzas</Text>
+
+      <View style={styles.header}>
+        <Text>
+          Nivel: {data.nivel.charAt(0).toUpperCase() + data.nivel.slice(1)}
+        </Text>
+        <Text>Fecha: {data.timestamp}</Text>
+      </View>
+
+      {data.preguntas.map((pregunta, index) => (
+        <View key={index} style={styles.question}>
+          <Text style={styles.questionText}>
+            Pregunta {pregunta.numero}: {pregunta.pregunta}
+          </Text>
+
+          {pregunta.opciones.map((opcion, optIndex) => (
+            <Text key={optIndex} style={styles.option}>
+              {optIndex + 1}. {opcion}
+            </Text>
+          ))}
+        </View>
+      ))}
+    </Page>
+  </Document>
+);
 
 function Formulario() {
-  const [currentQuestion, setCurrentQuestion] = useState(null);
+  const [selectedQuestions, setSelectedQuestions] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
   const selectQuestions = (nivel) => {
     const questions = {
       principiante: [
@@ -236,11 +303,26 @@ function Formulario() {
         },
       ],
     };
-    const selectedQuestions = questions[nivel];
-    const randomIndex = Math.floor(Math.random() * selectedQuestions.length);
-    const question = selectedQuestions[randomIndex];
-    console.log(question);
-    setCurrentQuestion(question);
+    const allQuestions = questions[nivel];
+    const selectedIndexes = new Set();
+    const selected = [];
+
+    while (selected.length < 3 && selected.length < allQuestions.length) {
+      const randomIndex = Math.floor(Math.random() * allQuestions.length);
+      if (!selectedIndexes.has(randomIndex)) {
+        selectedIndexes.add(randomIndex);
+        selected.push({
+          ...allQuestions[randomIndex],
+          numero: selected.length + 1,
+        });
+      }
+    }
+
+    setSelectedQuestions({
+      nivel,
+      preguntas: selected,
+      timestamp: new Date().toLocaleDateString(),
+    });
   };
 
   return (
@@ -263,43 +345,69 @@ function Formulario() {
       </div>
 
       <div className="bg-white p-6 rounded-lg shadow-md">
-        {currentQuestion ? (
-          <>
-            <h2 className="text-xl font-semibold mb-4">
-              {currentQuestion.pregunta}
-            </h2>
-            <div className="space-y-3">
-              {currentQuestion.opciones.map((opcion, index) => (
-                <div
-                  key={index}
-                  className="p-3 border rounded hover:bg-gray-50 cursor-pointer transition-colors"
-                >
-                  {opcion}
-                </div>
-              ))}
+        {selectedQuestions ? (
+          <div className="space-y-8">
+            <div className="border-b pb-4">
+              <h2 className="text-xl font-semibold">
+                Cuestionario Nivel:{" "}
+                {selectedQuestions.nivel.charAt(0).toUpperCase() +
+                  selectedQuestions.nivel.slice(1)}
+              </h2>
+              <p className="text-gray-600">
+                Fecha: {selectedQuestions.timestamp}
+              </p>
             </div>
-          </>
+
+            {selectedQuestions.preguntas.map((question, index) => (
+              <div key={index} className="space-y-4">
+                <h3 className="font-medium">
+                  Pregunta {question.numero}: {question.pregunta}
+                </h3>
+                <div className="pl-4 space-y-2">
+                  {question.opciones.map((opcion, optIndex) => (
+                    <div
+                      key={optIndex}
+                      className="p-2 border rounded hover:bg-gray-50"
+                    >
+                      {optIndex + 1}. {opcion}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+
+            <div className="pt-4 flex justify-between items-center border-t">
+              <button
+                onClick={() => setSelectedQuestions(null)}
+                className="text-blue-500 hover:text-blue-600"
+              >
+                Reiniciar
+              </button>
+
+              <PDFDownloadLink
+                document={<QuestionsPDF data={selectedQuestions} />}
+                fileName="cuestionario.pdf"
+                className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition-colors"
+              >
+                {({ loading }) =>
+                  loading ? "Generando PDF..." : "Descargar PDF"
+                }
+              </PDFDownloadLink>
+            </div>
+          </div>
         ) : (
           <div className="text-center">
             <p className="text-gray-600">
-              Selecciona un nivel de dificultad para recibir una pregunta
+              Selecciona un nivel de dificultad para recibir tres preguntas
+              aleatorias
             </p>
           </div>
         )}
       </div>
-
-      {currentQuestion && (
-        <button
-          onClick={() => setCurrentQuestion(null)}
-          className="mt-6 text-blue-500 hover:text-blue-600"
-        >
-          Volver al inicio
-        </button>
-      )}
-      <div>
+      <div className="text-center mt-4 text-gray-600">
         <Link to="/">
-          <button className="mt-6 text-blue-500 hover:text-blue-600">
-            Regresar
+          <button className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition-colors">
+            Volver al inicio
           </button>
         </Link>
       </div>
