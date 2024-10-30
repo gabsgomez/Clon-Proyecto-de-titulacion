@@ -29,8 +29,6 @@
     </div>
 </div>
 
-
-
 <!-- JavaScript para manejar la cámara, capturar foto y enviar datos con AJAX -->
 <script>
     document.addEventListener("DOMContentLoaded", function () {
@@ -80,10 +78,36 @@
         });
 
         captureBtn.addEventListener("click", function () {
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
+            const maxResolution = 720;
+            const minResolution = 480;
+
+            // Obtener dimensiones del video
+            let width = video.videoWidth;
+            let height = video.videoHeight;
+
+            // Redimensionar si excede la resolución máxima
+            if (width > maxResolution || height > maxResolution) {
+                const aspectRatio = width / height;
+                if (width > height) {
+                    width = maxResolution;
+                    height = Math.round(maxResolution / aspectRatio);
+                } else {
+                    height = maxResolution;
+                    width = Math.round(maxResolution * aspectRatio);
+                }
+            }
+
+            // Asegurarse de que la resolución mínima sea alcanzada
+            if (width < minResolution || height < minResolution) {
+                alert(`La resolución mínima es de ${minResolution}px. Por favor ajuste su cámara o posición.`);
+                return;
+            }
+
+            // Dibujar la imagen en el canvas y convertirla a base64
+            canvas.width = width;
+            canvas.height = height;
             const context = canvas.getContext("2d");
-            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            context.drawImage(video, 0, 0, width, height);
 
             const dataUrl = canvas.toDataURL("image/png");
             fotoRostroData.value = dataUrl;
@@ -95,6 +119,7 @@
         addStudentForm.addEventListener("submit", function (event) {
             event.preventDefault();
 
+            // Validación para verificar que se haya capturado la foto y subido un archivo PDF
             if (!fotoRostroData.value || !studentDocument.files.length) {
                 alert("Debe capturar una foto y subir un documento PDF antes de guardar.");
                 return;
@@ -105,10 +130,10 @@
                 method: 'POST',
                 body: formData
             })
-                .then(response => response.text())
+                .then(response => response.json())
                 .then(data => {
-                    alert(data);
-                    if (data.includes("correctamente")) {
+                    alert(data.message);
+                    if (data.success) {
                         location.reload();  // Recargar la página para actualizar la tabla
                     }
                 })

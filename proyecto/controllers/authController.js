@@ -242,6 +242,33 @@ const obtenerUltimoIdContrato = () => {
   });
 };
 
+//lo nuevo
+const entidadesValidas = {
+  AS: 'Aguascalientes', BC: 'Baja California', BS: 'Baja California Sur', CC: 'Campeche',
+  CL: 'Coahuila de Zaragoza', CM: 'Colima', CS: 'Chiapas', CH: 'Chihuahua',
+  DF: 'Ciudad de México', DG: 'Durango', GT: 'Guanajuato', GR: 'Guerrero',
+  HG: 'Hidalgo', JC: 'Jalisco', MC: 'México', MN: 'Michoacán de Ocampo',
+  MS: 'Morelos', NT: 'Nayarit', NL: 'Nuevo León', OC: 'Oaxaca',
+  PL: 'Puebla', QT: 'Querétaro', QR: 'Quintana Roo', SP: 'San Luis Potosí',
+  SL: 'Sinaloa', SR: 'Sonora', TC: 'Tabasco', TS: 'Tamaulipas',
+  TL: 'Tlaxcala', VZ: 'Veracruz', YN: 'Yucatán', ZS: 'Zacatecas', NE: 'Nacido en el Extranjero'
+};
+
+
+function validarEntidadFederativaEnCURP(curp) {
+  const entidad = curp.substring(11, 13); // Extrae la entidad en el CURP
+  console.log(`Entidad extraída del CURP: ${entidad}`);
+
+  if (!entidadesValidas.hasOwnProperty(entidad)) {
+    return { valido: false, mensaje: 'La entidad federativa en el CURP no es válida.' };
+  }
+
+  console.log(`Entidad válida: ${entidadesValidas[entidad]}`);
+  return { valido: true };
+}
+
+
+
 // Función para validar el correo electrónico
 function validarCorreo(correo) {
   return /^[\w.%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(correo) && correo.length <= 100;
@@ -355,6 +382,34 @@ function validarRQNF17(curp) {
   return { valido: true };
 }
 
+//nuevo
+// Función para validar la fecha en el CURP
+function validarFechaNacimientoEnCURP(curp, year, month, day) {
+  console.log("Ejecutando validarFechaNacimientoEnCURP");
+
+  const curpYear = curp.substring(4, 6); // Año (2 dígitos)
+  console.log(`CURP AÑO: ${curpYear}`);
+  
+  const curpMonth = curp.substring(6, 8); // Mes (2 dígitos)
+  console.log(`CURP MES: ${curpMonth}`);
+  
+  const curpDay = curp.substring(8, 10); // Día (2 dígitos)
+  console.log(`CURP DÍA: ${curpDay}`);
+
+  const yearDigits = year.toString().slice(-2);
+  const monthDigits = month.toString().padStart(2, '0');
+  const dayDigits = day.toString().padStart(2, '0');
+
+  console.log(`FECHA INGRESADA - Año: ${yearDigits}, Mes: ${monthDigits}, Día: ${dayDigits}`);
+
+  const isValid = curpYear === yearDigits && curpMonth === monthDigits && curpDay === dayDigits;
+  console.log(`Resultado de la validación: ${isValid}`);
+
+  return isValid
+    ? { valido: true }
+    : { valido: false, mensaje: 'La fecha de nacimiento en el CURP no coincide con la ingresada.' };
+}
+
 // Función de validación de CURP completa con mensajes de error específicos
 function validarCURP(CURP, primerApellido, segundoApellido, nombre) {
   // Validar que la CURP tenga 18 caracteres
@@ -378,6 +433,14 @@ function validarCURP(CURP, primerApellido, segundoApellido, nombre) {
   if (!validacionRQNF17.valido) {
     return validacionRQNF17;
   }
+
+  //lo nuevo
+    // Validación de la entidad federativa en el CURP
+    const validacionEntidadFederativa = validarEntidadFederativaEnCURP(CURP);
+    if (!validacionEntidadFederativa.valido) {
+      return validacionEntidadFederativa;
+    }
+  
 
   // Otras validaciones generales del CURP (fecha, sexo, etc.)
   const regexIniciales = /^[A-Z]{4}/;  // Primeras 4 letras mayúsculas
@@ -408,7 +471,9 @@ function validarCURP(CURP, primerApellido, segundoApellido, nombre) {
 
 // Función para registrar un nuevo usuario
 exports.register = async (req, res) => {
-  const { nombre, apellidoPaterno, apellidoMaterno, sexo, curp, telefono, correo, password, tipo } = req.body;
+  //const { nombre, apellidoPaterno, apellidoMaterno, sexo, curp, telefono, correo, password, tipo } = req.body;
+  const { nombre, apellidoPaterno, apellidoMaterno, sexo, curp, telefono, correo, password, tipo, fechaNacimiento } = req.body;
+  const { year, month, day } = fechaNacimiento;
 
   if (!nombre || !apellidoPaterno || !apellidoMaterno || !sexo || !curp || !telefono || !correo || !password || !tipo) {
     return res.status(400).send('Por favor, llena todos los campos');
@@ -448,6 +513,18 @@ exports.register = async (req, res) => {
     return res.status(400).send('Selección de sexo inválida (RQF6, RQNF21)');
   }
 
+  // Llamada y pruebas de consola en el flujo principal
+const validacionFechaCURP = validarFechaNacimientoEnCURP(curp, year, month, day);
+console.log(`Día ingresado: ${day}`);
+console.log(`Mes ingresado: ${month}`);
+console.log(`Año ingresado: ${year}`);
+console.log(`Resultado de validacionFechaCURP:`, validacionFechaCURP);
+
+
+
+if (!validacionFechaCURP.valido) return res.status(400).send(validacionFechaCURP.mensaje);
+
+
   try {
     const contratoId = await generateContratoId();
     const contratoQuery = 'INSERT INTO contratos (ID_Contrato) VALUES (?)';
@@ -475,7 +552,7 @@ exports.register = async (req, res) => {
 
     const mailOptions = {
       from: 'a20300685@ceti.mx',
-      to: correo,
+      to: 'a20300685@ceti.mx',
       subject: 'Nuevo Alumno',
       text: `
       ¡Se ha creado una cuenta nueva! 
