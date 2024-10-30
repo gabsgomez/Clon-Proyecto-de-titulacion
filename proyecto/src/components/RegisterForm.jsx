@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+/*import React, { useState } from 'react';
 import './RegisterForm.css';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const RegisterForm = () => {
   const [formData, setFormData] = useState({
@@ -16,6 +16,8 @@ const RegisterForm = () => {
   });
 
   const [selectedButton, setSelectedButton] = useState('');
+  const [errorMessage, setErrorMessage] = useState(''); // Estado para manejar mensajes de error
+  const navigate = useNavigate(); // Para redireccionar
 
   const handleChange = (e) => {
     setFormData({
@@ -34,15 +36,30 @@ const RegisterForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const response = await fetch('http://localhost:5000/api/auth/register', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(formData)
-    });
-    const data = await response.text();
-    alert(data);
+    setErrorMessage(''); // Limpiar el mensaje de error al intentar de nuevo
+
+    try {
+      const response = await fetch('http://localhost:5000/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+      });
+
+      const data = await response.text();
+
+      if (response.ok) {
+        // Redirigir solo si no hay errores y la respuesta es exitosa
+        alert('Registro exitoso');
+        navigate('/classroom');
+      } else {
+        // Si hay errores, mostrar el mensaje y no redirigir
+        setErrorMessage(data);
+      }
+    } catch (error) {
+      setErrorMessage('Hubo un problema con la conexión al servidor. Intenta nuevamente.');
+    }
   };
 
   return (
@@ -55,48 +72,226 @@ const RegisterForm = () => {
           <input type="text" name="nombre" placeholder="Nombre o nombres" onChange={handleChange} />
           <input type="text" name="apellidoPaterno" placeholder="Apellido Paterno" onChange={handleChange} />
           <input type="text" name="apellidoMaterno" placeholder="Apellido Materno" onChange={handleChange} />
-          {/*<select name="sexo" onChange={handleChange}>
-            <option value="" disabled selected>Sexo</option>
+          
+          <select name="sexo" value={formData.sexo} onChange={handleChange}>
+            <option value="" disabled>Sexo</option>
             <option value="M">Masculino</option>
             <option value="F">Femenino</option>
             <option value="O">Otro</option>
-  </select>*/}
-  <select name="sexo" value={formData.sexo} onChange={handleChange}>
-  <option value="" disabled>Sexo</option>
-  <option value="M">Masculino</option>
-  <option value="F">Femenino</option>
-  <option value="O">Otro</option>
-</select>
+          </select>
 
           <input type="text" name="curp" placeholder="CURP" onChange={handleChange} />
           <input type="tel" name="telefono" placeholder="Número de teléfono" onChange={handleChange} />
           <input type="email" name="correo" placeholder="Correo" onChange={handleChange} />
           <input type="password" name="password" placeholder="Contraseña" onChange={handleChange} />
 
-            <div className="options">
+          <div className="options">
             <button
               className={selectedButton === 'P' ? 'selected' : ''}
               onClick={() => handleTipoChange('P')}
-            >Usuario Principiante</button>
+              type="button"
+            >
+              Usuario Principiante
+            </button>
             <button
               className={selectedButton === 'Av' ? 'selected' : ''}
               onClick={() => handleTipoChange('Av')}
-            >Usuario Avanzado</button>
+              type="button"
+            >
+              Usuario Avanzado
+            </button>
             <button
               className={selectedButton === 'F' ? 'selected' : ''}
               onClick={() => handleTipoChange('F')}
-            >Asesorías Financieras</button>
+              type="button"
+            >
+              Asesorías Financieras
+            </button>
           </div>
 
-          <Link to="/classroom">
           <button className="submit-button" type="submit">Crear cuenta</button>
 
-
-
-          </Link>
-
+          
+          {errorMessage && <p className="error-message">{errorMessage}</p>}
         </form>
-        
+      </div>
+    </div>
+  );
+};
+
+export default RegisterForm;
+*/
+
+
+
+
+
+
+import React, { useState } from 'react';
+import './RegisterForm.css';
+import { useNavigate } from 'react-router-dom';
+
+const RegisterForm = () => {
+  const [formData, setFormData] = useState({
+    nombre: '',
+    apellidoPaterno: '',
+    apellidoMaterno: '',
+    sexo: '',
+    curp: '',
+    telefono: '',
+    correo: '',
+    password: '',
+    tipo: ''
+  });
+
+  const [selectedButton, setSelectedButton] = useState('');
+  const [errorMessage, setErrorMessage] = useState(''); // Estado para manejar mensajes de error
+  const navigate = useNavigate(); // Para redireccionar
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    // Convertir a mayúsculas para los campos específicos
+    const uppercaseFields = ['curp', 'nombre', 'apellidoPaterno', 'apellidoMaterno'];
+    const newValue = uppercaseFields.includes(name) ? value.toUpperCase() : value;
+
+    setFormData({
+      ...formData,
+      [name]: newValue
+    });
+  };
+
+  const handleTipoChange = (tipo) => {
+    setFormData({
+      ...formData,
+      tipo: tipo
+    });
+    setSelectedButton(tipo);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setErrorMessage(''); // Limpiar el mensaje de error al intentar de nuevo
+
+    try {
+      const response = await fetch('http://localhost:5000/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+      });
+
+      const data = await response.text();
+
+      if (response.ok) {
+        // Redirigir solo si no hay errores y la respuesta es exitosa
+        alert('Registro exitoso');
+         // Redirección a classroom.php
+    window.location.href = "http://localhost/proyecto/php_module/classroom.php";
+      } else {
+        // Si hay errores, mostrar el mensaje y no redirigir
+        setErrorMessage(data);
+      }
+    } catch (error) {
+      setErrorMessage('Hubo un problema con la conexión al servidor. Intenta nuevamente.');
+    }
+  };
+
+  return (
+    <div className="form-container">
+      <div className='registra-tus-datos'>
+        <h1>¡Registra tus datos!</h1>
+      </div>
+      <div className="form-contentt">
+        <form className="register-form" onSubmit={handleSubmit}>
+          <input 
+            type="text" 
+            name="nombre" 
+            placeholder="Nombre o nombres" 
+            value={formData.nombre} 
+            onChange={handleChange} 
+          />
+          <input 
+            type="text" 
+            name="apellidoPaterno" 
+            placeholder="Apellido Paterno" 
+            value={formData.apellidoPaterno} 
+            onChange={handleChange} 
+          />
+          <input 
+            type="text" 
+            name="apellidoMaterno" 
+            placeholder="Apellido Materno" 
+            value={formData.apellidoMaterno} 
+            onChange={handleChange} 
+          />
+          
+          <select name="sexo" value={formData.sexo} onChange={handleChange}>
+            <option value="" disabled>Sexo</option>
+            <option value="M">Masculino</option>
+            <option value="F">Femenino</option>
+            <option value="O">Otro</option>
+          </select>
+
+          <input 
+            type="text" 
+            name="curp" 
+            placeholder="CURP" 
+            value={formData.curp} 
+            onChange={handleChange} 
+          />
+          <input 
+            type="tel" 
+            name="telefono" 
+            placeholder="Número de teléfono" 
+            value={formData.telefono} 
+            onChange={handleChange} 
+          />
+          <input 
+            type="email" 
+            name="correo" 
+            placeholder="Correo" 
+            value={formData.correo} 
+            onChange={handleChange} 
+          />
+          <input 
+            type="password" 
+            name="password" 
+            placeholder="Contraseña" 
+            value={formData.password} 
+            onChange={handleChange} 
+          />
+
+          <div className="options">
+            <button
+              className={selectedButton === 'P' ? 'selected' : ''}
+              onClick={() => handleTipoChange('P')}
+              type="button"
+            >
+              Usuario Principiante
+            </button>
+            <button
+              className={selectedButton === 'Av' ? 'selected' : ''}
+              onClick={() => handleTipoChange('Av')}
+              type="button"
+            >
+              Usuario Avanzado
+            </button>
+            <button
+              className={selectedButton === 'F' ? 'selected' : ''}
+              onClick={() => handleTipoChange('F')}
+              type="button"
+            >
+              Asesorías Financieras
+            </button>
+          </div>
+
+          <button className="submit-button" type="submit">Crear cuenta</button>
+
+          {/* Mostrar mensaje de error si existe */}
+          {errorMessage && <p className="error-message">{errorMessage}</p>}
+        </form>
       </div>
     </div>
   );

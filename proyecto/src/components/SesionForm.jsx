@@ -11,6 +11,7 @@ const SesionForm = () => {
   });
   const [step, setStep] = useState(1); // Estado para manejar el paso del formulario
   const [isPasswordReset, setIsPasswordReset] = useState(false); // Estado para manejar el modo de restablecimiento de contraseña
+  const [userType, setUserType] = useState(null); // Estado para almacenar el tipo de usuario
 
   const navigate = useNavigate(); // Hook para navegación
 
@@ -128,12 +129,17 @@ const SesionForm = () => {
               password: formData.password,
             }),
           });
-          const data = await response.text();
-
+         // const data = await response.text();
+         const data = await response.json();
+         
           if (response.status === 200) {
             console.log(
               "Correo y contraseña correctos, ingresa el código de verificación"
             );
+
+            //lo nuevo
+            setUserType(data.userType); // Guardar el tipo de usuario
+            //
 
             setStep(2); // Pasar al paso de verificación del código
           } else {
@@ -160,8 +166,16 @@ const SesionForm = () => {
           const data = await response.text();
           if (response.status === 200) {
             console.log("Verificación exitosa");
+            //lo nuevo
+            console.log(userType);
+            if (userType === 'F') {
+              navigate("/VideoconferenciasFinancieras");
+            } else {
+              navigate("/AulaInteractiva");
+            }
+            //
 
-            navigate("/AulaInteractiva"); // Navegar a la página de inicio después de un inicio de sesión exitoso
+            //navigate("/AulaInteractiva"); // Navegar a la página de inicio después de un inicio de sesión exitoso
           } else {
             console.log("Error al verificar el código:", data);
           }

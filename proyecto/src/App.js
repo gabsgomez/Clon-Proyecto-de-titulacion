@@ -30,6 +30,8 @@ import Room from './components/Room';
 import PayPal from './components/PayPal';
 
 import CajaInicio from './components/CajaInicio';
+import VideoconferenciasFinancieras from './components/VideoconferenciasFinancieras';
+import DocumentosDeIdentidad from './components/DocumentosDeIdentidad';
 
 
 
@@ -74,9 +76,12 @@ function MainContent() {
           <Route path="/PayPal" element={<PayPal/>}/>
 
           <Route path="/CajaInicio" element={<CajaInicio/>}/>
-          
 
           
+<Route path="/VideoconferenciasFinancieras" element={<VideoconferenciasFinancieras />} />
+
+<Route path="/DocumentosDeIdentidad" element={<DocumentosDeIdentidad/>}/>
+
           
 
           
