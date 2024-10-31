@@ -28,7 +28,7 @@ const SesionForm = () => {
         // Solicitar el restablecimiento de contraseña
         try {
           const response = await fetch(
-            "http://localhost:3000/api/auth/request-password-reset",
+            "http://localhost:5000/api/auth/request-password-reset",
             {
               method: "POST",
               headers: {
@@ -118,6 +118,7 @@ const SesionForm = () => {
       // Inicio de sesión
       if (step === 1) {
         try {
+          console.log("Iniciando sesión...", formData.correo, formData.password);
           const response = await fetch("http://localhost:5000/api/auth/login", {
             method: "POST",
             headers: {
@@ -258,7 +259,7 @@ const SesionForm = () => {
                   Iniciar Sesión
                 </button>
               </>
-            )}
+            )} 
             {step === 2 && (
               <>
                 <div className="form-groupp">

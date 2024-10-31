@@ -1,4 +1,4 @@
-const mysql = require("mysql");
+const mysql = require("mysql2/promise");
 const util = require("util");
 
 const pool = mysql.createPool({
@@ -7,8 +7,7 @@ const pool = mysql.createPool({
   user: "root",
   password: "",
   database: "marathon_institudee",
-  waitForConnections: true,
-  queueLimit: 0
+  port: 3307,
 });
 
 // Promisify para usar async/await

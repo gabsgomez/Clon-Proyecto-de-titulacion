@@ -25,6 +25,7 @@ import Caja from "./components/Caja";
 import ChatBot from "./components/ChatBot";
 import Videoconferencias from "./components/Videoconferencias"; // VideoCall and Chat
 import Formulario from "./components/Formulario";
+import ImageUploader from "./components/ImageUploader";
 
 import Acciones from "./components/acciones";
 import Fondos from "./components/fondos";
@@ -85,6 +86,7 @@ function MainContent() {
     "/bonos",
     "/economias",
     "/form",
+    "/subir-imagenes",
   ];
 
   return (
@@ -113,6 +115,7 @@ function MainContent() {
           <Route path="/bonos" element={<Bonos />} />
           <Route path="/economias" element={<Economias />} />
           <Route path="/form" element={<Formulario />} />
+          <Route path="/subir-imagenes" element={<ImageUploader />} />
 
           {/* Ruta para la página de videoconferencias */}
           <Route path="/Videoconferencias" element={<Videoconferencias />} />
