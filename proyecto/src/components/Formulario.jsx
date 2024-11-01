@@ -1,332 +1,9 @@
-import React, { useState, useCallback, useMemo } from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { useDropzone } from "react-dropzone";
+import { PDFDownloadLink } from "@react-pdf/renderer";
+import ImageUploader from "./ImageUploader";
+import QuestionsPDF from "./PdfConverter";
 
-import {
-  Document,
-  Page,
-  Text,
-  View,
-  PDFDownloadLink,
-  StyleSheet,
-  Image,
-} from "@react-pdf/renderer";
-
-const styles = StyleSheet.create({
-  page: { padding: 30 },
-  title: { fontSize: 24, marginBottom: 20, textAlign: "center" },
-  subtitle: { fontSize: 16, marginBottom: 10, textAlign: "center" },
-  header: {
-    fontSize: 14,
-    marginBottom: 20,
-    padding: 10,
-    backgroundColor: "#f0f0f0",
-  },
-  info: { fontSize: 12, marginBottom: 5 },
-  temaInfo: {
-    marginTop: 20,
-    marginBottom: 30,
-    padding: 10,
-  },
-  temaTitle: {
-    fontSize: 18,
-    marginBottom: 10,
-    fontWeight: "bold",
-  },
-  temaDescription: {
-    fontSize: 12,
-    marginBottom: 15,
-    lineHeight: 1.5,
-  },
-  objetivos: {
-    fontSize: 12,
-    marginBottom: 5,
-    marginLeft: 20,
-  },
-  imageContainer: { marginVertical: 10 },
-  image: {
-    width: "auto",
-    height: 200,
-    marginVertical: 10,
-    alignSelf: "center",
-  },
-  imageCaption: {
-    fontSize: 10,
-    textAlign: "center",
-    marginTop: 5,
-    fontStyle: "italic",
-  },
-  question: { marginBottom: 15 },
-  questionText: { fontSize: 12, marginBottom: 10 },
-  option: { fontSize: 10, marginLeft: 20, marginBottom: 5 },
-  paragraphQuestion: {
-    fontSize: 12,
-    marginBottom: 10,
-    marginLeft: 20,
-    fontStyle: "italic",
-  },
-  divider: {
-    borderBottom: 1,
-    borderBottomColor: "#000000",
-    borderBottomStyle: "solid",
-    marginVertical: 15,
-  },
-});
-
-const ImageUploader = ({ images = [], onImageUpload, onImageRemove }) => {
-  const [error, setError] = useState(null);
-
-  const imageArray = useMemo(
-    () => (Array.isArray(images) ? images : []),
-    [images]
-  );
-
-  const onDrop = useCallback(
-    (acceptedFiles) => {
-      setError(null);
-      Promise.all(
-        acceptedFiles.map((file) => {
-          return new Promise((resolve, reject) => {
-            if (!file.type.startsWith("image/")) {
-              reject(new Error(`${file.name} no es una imagen válida`));
-              return;
-            }
-
-            const reader = new FileReader();
-
-            reader.onabort = () =>
-              reject(
-                new Error(`La lectura del archivo ${file.name} fue abortada`)
-              );
-            reader.onerror = () =>
-              reject(new Error(`Error al leer el archivo ${file.name}`));
-
-            reader.onloadend = () => {
-              resolve({
-                data: reader.result,
-                caption: "",
-                title: file.name,
-                size: file.size,
-                type: file.type,
-              });
-            };
-
-            reader.readAsDataURL(file);
-          });
-        })
-      )
-        .then((newImages) => {
-          onImageUpload([...imageArray, ...newImages]);
-        })
-        .catch((err) => {
-          setError(err.message);
-          console.error("Error al procesar las imágenes:", err);
-        });
-    },
-    [imageArray, onImageUpload]
-  );
-
-  const { getRootProps, getInputProps, isDragActive, fileRejections } =
-    useDropzone({
-      onDrop,
-      accept: {
-        "image/*": [
-          ".jpg",
-          ".jpeg",
-          ".png",
-          ".gif",
-          ".bmp",
-          ".webp",
-          ".tiff",
-          ".svg",
-        ],
-      },
-      maxSize: 5242880, // 5MB
-      maxFiles: 5,
-      multiple: true,
-    });
-
-  const fileRejectionItems = fileRejections.map(({ file, errors }) => (
-    <li key={file.path} className="text-red-500 text-sm">
-      {file.path} - {errors.map((e) => e.message).join(", ")}
-    </li>
-  ));
-
-  return (
-    <div className="space-y-6">
-      <div
-        {...getRootProps()}
-        className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors
-          ${
-            isDragActive
-              ? "border-blue-500 bg-blue-50"
-              : "border-gray-300 hover:border-blue-400"
-          }
-          ${error ? "border-red-300" : ""}`}
-      >
-        <input {...getInputProps()} />
-        <div className="space-y-2">
-          <div className="text-4xl text-gray-400">📸</div>
-          <p className="text-gray-600">
-            {isDragActive
-              ? "Suelta las imágenes aquí"
-              : "Arrastra y suelta imágenes aquí, o haz clic para seleccionar"}
-          </p>
-          <p className="text-sm text-gray-500">
-            Formatos permitidos: JPG, JPEG, PNG, GIF, BMP, WEBP, TIFF, SVG |
-            Máximo 5MB por archivo
-          </p>
-        </div>
-      </div>
-
-      {/* Mostrar errores si existen */}
-      {(error || fileRejections.length > 0) && (
-        <div className="bg-red-50 border border-red-200 rounded-md p-4">
-          <p className="text-red-600 font-medium">Se encontraron errores:</p>
-          {error && <p className="text-red-500 text-sm">{error}</p>}
-          {fileRejections.length > 0 && (
-            <ul className="list-disc list-inside mt-2">{fileRejectionItems}</ul>
-          )}
-        </div>
-      )}
-
-      {/* Vista previa de imágenes */}
-      {imageArray.length > 0 && (
-        <div className="space-y-4">
-          <div className="flex justify-between items-center">
-            <h3 className="font-medium text-gray-700">
-              Imágenes cargadas ({imageArray.length})
-            </h3>
-            <button
-              type="button"
-              onClick={() => onImageUpload([])}
-              className="text-red-500 hover:text-red-600 text-sm px-3 py-1 rounded-md hover:bg-red-50 transition-colors"
-            >
-              Eliminar todas
-            </button>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {imageArray.map((image, index) => (
-              <div
-                key={index}
-                className="border rounded-lg p-4 space-y-3 bg-white shadow-sm"
-              >
-                <div className="relative aspect-video">
-                  <img
-                    src={image.data}
-                    alt={image.title}
-                    className="w-full h-full object-contain rounded"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <p
-                    className="text-sm text-gray-500 truncate"
-                    title={image.title}
-                  >
-                    {image.title}
-                  </p>
-                  <input
-                    type="text"
-                    value={image.caption || ""}
-                    onChange={(e) => {
-                      const newImages = [...imageArray];
-                      newImages[index].caption = e.target.value;
-                      onImageUpload(newImages);
-                    }}
-                    placeholder="Agregar descripción..."
-                    className="w-full p-2 text-sm border rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                  <div className="flex justify-between items-center">
-                    <span className="text-xs text-gray-500">
-                      {(image.size / 1024 / 1024).toFixed(2)} MB
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => onImageRemove(index)}
-                      className="text-red-500 hover:text-red-600 text-sm px-3 py-1 rounded-md hover:bg-red-50 transition-colors"
-                    >
-                      Eliminar
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-    </div>
-  );
-};
-
-// Componente para el PDF
-const QuestionsPDF = ({ preguntas, nivel, tema, temaInfo }) => (
-  <Document>
-    <Page size="A4" style={styles.page}>
-      <Text style={styles.title}>Cuestionario de Finanzas</Text>
-      <Text style={styles.subtitle}>{tema.nombre}</Text>
-
-      <View style={styles.header}>
-        <Text style={styles.info}>
-          Nivel: {nivel.charAt(0).toUpperCase() + nivel.slice(1)}
-        </Text>
-        <Text style={styles.info}>Tema: {tema.nombre}</Text>
-        <Text style={styles.info}>
-          Fecha: {new Date().toLocaleDateString()}
-        </Text>
-      </View>
-
-      {temaInfo && (
-        <View style={styles.temaInfo}>
-          <Text style={styles.temaTitle}>Información del Tema</Text>
-          <Text style={styles.temaDescription}>{temaInfo.descripcion}</Text>
-
-          {temaInfo.imagenes?.map((imagen, index) => (
-            <View key={index} style={styles.imageContainer}>
-              <Image src={imagen.data} style={styles.image} />
-              {imagen.caption && (
-                <Text style={styles.imageCaption}>{imagen.caption}</Text>
-              )}
-            </View>
-          ))}
-
-          <Text style={styles.temaTitle}>Objetivos de Aprendizaje:</Text>
-          {temaInfo.objetivos.split("\n").map((objetivo, index) => (
-            <Text key={index} style={styles.objetivos}>
-              • {objetivo}
-            </Text>
-          ))}
-
-          <Text style={styles.temaTitle}>Conceptos Clave:</Text>
-          <Text style={styles.temaDescription}>{temaInfo.conceptosClave}</Text>
-        </View>
-      )}
-
-      <View style={styles.divider} />
-
-      {preguntas.map((pregunta, index) => (
-        <View key={index} style={styles.question}>
-          <Text style={styles.questionText}>
-            Pregunta {pregunta.numero}: {pregunta.pregunta}
-          </Text>
-          {pregunta.tipo === "opcion_multiple" ? (
-            pregunta.opciones.map((opcion, optIndex) => (
-              <Text key={optIndex} style={styles.option}>
-                {optIndex + 1}. {opcion}
-              </Text>
-            ))
-          ) : (
-            <Text style={styles.paragraphQuestion}>
-              [Pregunta de desarrollo]
-            </Text>
-          )}
-        </View>
-      ))}
-    </Page>
-  </Document>
-);
-
-// Componente del Formulario Principal
 const Formulario = () => {
   const [nivel, setNivel] = useState(null);
   const [temaSeleccionado, setTemaSeleccionado] = useState(null);
@@ -335,7 +12,7 @@ const Formulario = () => {
     descripcion: "",
     objetivos: "",
     conceptosClave: "",
-    imagenes: [], // Asegúrate de inicializarlo como un array vacío
+    imagenes: [],
   });
   const [mostrarFormularioTema, setMostrarFormularioTema] = useState(false);
   const [tipoPregunta, setTipoPregunta] = useState("opcion_multiple");
@@ -356,29 +33,19 @@ const Formulario = () => {
     setNivel(nivelSeleccionado);
     setTemaSeleccionado(null);
     setPreguntas([]);
-    setTemaInfo(null);
+    setTemaInfo({
+      descripcion: "",
+      objetivos: "",
+      conceptosClave: "",
+      imagenes: [],
+    });
   };
 
   const handleTemaChange = (e) => {
     const temaId = e.target.value;
-    const temas =
-      nivel === "principiante" ? temasPrincipiante : temasIntermedio;
+    const temas = nivel === "principiante" ? temasPrincipiante : temasIntermedio;
     const tema = temas.find((t) => t.id === temaId);
     setTemaSeleccionado(tema);
-  };
-
-  const handleTemaInfoSubmit = (e) => {
-    e.preventDefault();
-    const formData = new FormData(e.target);
-    
-    setTemaInfo(prevTemaInfo => ({
-      ...prevTemaInfo,
-      descripcion: formData.get("descripcion") || '',
-      objetivos: formData.get("objetivos") || '',
-      conceptosClave: formData.get("conceptosClave") || '',
-    }));
-    
-    setMostrarFormularioTema(false);
   };
 
   const handleSubmitTemaInfo = (e) => {
@@ -470,86 +137,23 @@ const Formulario = () => {
           </div>
 
           {/* Formulario de información del tema */}
-          {temaSeleccionado && !temaInfo && (
-            <div className="bg-white p-6 rounded-lg shadow-md">
-              <h2 className="text-xl font-bold mb-4">Información del Tema</h2>
-              <form onSubmit={handleSubmitTemaInfo} className="space-y-4">
-                <div>
-                  <label className="block text-gray-700 font-medium mb-2">
-                    Descripción General
-                  </label>
-                  <textarea
-                    name="descripcion"
-                    required
-                    className="w-full p-2 border rounded min-h-[100px]"
-                    placeholder="Ingrese una descripción general del tema..."
-                  />
-                </div>
-
-                <ImageUploader
-                  images={temaInfo?.imagenes || []}
-                  onImageUpload={(images) => {
-                    setTemaInfo((prev) => ({ ...prev, imagenes: images }));
-                  }}
-                  onImageRemove={(index) => {
-                    setTemaInfo((prev) => ({
-                      ...prev,
-                      imagenes: prev.imagenes.filter((_, i) => i !== index),
-                    }));
-                  }}
-                />
-
-                <div>
-                  <label className="block text-gray-700 font-medium mb-2">
-                    Objetivos de Aprendizaje
-                  </label>
-                  <textarea
-                    name="objetivos"
-                    required
-                    className="w-full p-2 border rounded min-h-[100px]"
-                    placeholder="Ingrese los objetivos de aprendizaje (uno por línea)..."
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-gray-700 font-medium mb-2">
-                    Conceptos Clave
-                  </label>
-                  <textarea
-                    name="conceptosClave"
-                    required
-                    className="w-full p-2 border rounded min-h-[100px]"
-                    placeholder="Ingrese los conceptos clave del tema..."
-                  />
-                </div>
-
-                <button
-                  type="submit"
-                  className="w-full bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition-colors"
-                >
-                  Guardar Información
-                </button>
-              </form>
-            </div>
-          )}
-
-          {temaInfo && (
+          {temaSeleccionado && (
             <div className="bg-white p-6 rounded-lg shadow-md">
               <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-bold">Información del Tema</h2>
-                <button
-                  onClick={() =>
-                    setMostrarFormularioTema(!mostrarFormularioTema)
-                  }
-                  className="text-blue-500 hover:text-blue-600"
-                >
-                  {mostrarFormularioTema
-                    ? "Cancelar Edición"
-                    : "Editar Información"}
-                </button>
+                <h2 className="text-xl font-bold">
+                  {mostrarFormularioTema ? "Editar" : "Información del"} Tema
+                </h2>
+                {!mostrarFormularioTema && temaInfo.descripcion && (
+                  <button
+                    onClick={() => setMostrarFormularioTema(true)}
+                    className="text-blue-500 hover:text-blue-600"
+                  >
+                    Editar Información
+                  </button>
+                )}
               </div>
 
-              {mostrarFormularioTema ? (
+              {(mostrarFormularioTema || !temaInfo.descripcion) ? (
                 <form onSubmit={handleSubmitTemaInfo} className="space-y-4">
                   <div>
                     <label className="block text-gray-700 font-medium mb-2">
@@ -588,6 +192,7 @@ const Formulario = () => {
                       defaultValue={temaInfo.objetivos}
                       required
                       className="w-full p-2 border rounded min-h-[100px]"
+                      placeholder="Ingrese un objetivo por línea..."
                     />
                   </div>
 
@@ -607,7 +212,7 @@ const Formulario = () => {
                     type="submit"
                     className="w-full bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition-colors"
                   >
-                    Actualizar Información
+                    {mostrarFormularioTema ? "Actualizar" : "Guardar"} Información
                   </button>
                 </form>
               ) : (
@@ -645,7 +250,7 @@ const Formulario = () => {
                     <h3 className="font-medium text-gray-700">
                       Objetivos de Aprendizaje
                     </h3>
-                    {temaInfo.objetivos.split("\n").map((objetivo, index) => (
+                    {temaInfo.objetivos?.split("\n").map((objetivo, index) => (
                       <p key={index} className="text-gray-600 ml-4">
                         • {objetivo}
                       </p>
@@ -665,7 +270,8 @@ const Formulario = () => {
             </div>
           )}
 
-          {temaInfo && !mostrarFormularioTema && (
+          {/* Formulario de preguntas */}
+          {temaInfo.descripcion && !mostrarFormularioTema && (
             <div className="bg-white p-6 rounded-lg shadow-md">
               <h2 className="text-xl font-bold mb-4">Agregar Pregunta</h2>
 
@@ -725,6 +331,7 @@ const Formulario = () => {
             </div>
           )}
 
+          {/* Lista de preguntas y generación de PDF */}
           {preguntas.length > 0 && (
             <div className="bg-white p-6 rounded-lg shadow-md">
               <h2 className="text-xl font-bold mb-4">Preguntas Agregadas</h2>
