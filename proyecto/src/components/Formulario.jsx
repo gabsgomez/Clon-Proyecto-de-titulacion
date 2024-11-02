@@ -43,7 +43,7 @@ const Formulario = () => {
 
   const handleTemaChange = (e) => {
     const temaId = e.target.value;
-    const temas = nivel === "principiante" ? temasPrincipiante : temasIntermedio;
+    const temas = nivel === "P" ? temasPrincipiante : temasIntermedio;
     const tema = temas.find((t) => t.id === temaId);
     setTemaSeleccionado(tema);
   };
@@ -84,16 +84,50 @@ const Formulario = () => {
     e.target.reset();
   };
 
+  const guardarPDF = async (pdfBlob) => {
+    try {
+      const formData = new FormData();
+      formData.append("pdf", pdfBlob, "cuestionario.pdf");
+      formData.append("nivel", nivel);
+      formData.append(
+        "nombre_archivo",
+        `cuestionario_${nivel}_${temaSeleccionado.nombre
+          .toLowerCase()
+          .replace(/ /g, "_")}.pdf`
+      );
+
+      const response = await fetch(
+        "http://localhost:5000/api/form/guardar-pdf",
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Error al guardar el PDF");
+      }
+
+      console.log("PDF guardado exitosamente:", data);
+      // Mostrar mensaje de éxito o realizar otras acciones
+      alert("PDF guardado correctamente");
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Error al guardar el PDF: " + error.message);
+    }
+  };
+
   return (
     <div className="max-w-2xl mx-auto p-6">
       <h1 className="text-2xl font-bold mb-6">Formulario de Cuestionario</h1>
 
-      {/* Selección de nivel */}
       <div className="space-y-4 mb-6">
         <button
-          onClick={() => handleNivelSelect("principiante")}
+          onClick={() => handleNivelSelect("P")}
           className={`w-full py-2 px-4 rounded transition-colors ${
-            nivel === "principiante"
+            nivel === "P"
               ? "bg-blue-600 text-white"
               : "bg-blue-100 text-blue-600 hover:bg-blue-200"
           }`}
@@ -101,20 +135,19 @@ const Formulario = () => {
           Principiante
         </button>
         <button
-          onClick={() => handleNivelSelect("intermedio")}
+          onClick={() => handleNivelSelect("AV")}
           className={`w-full py-2 px-4 rounded transition-colors ${
-            nivel === "intermedio"
+            nivel === "AV"
               ? "bg-green-600 text-white"
               : "bg-green-100 text-green-600 hover:bg-green-200"
           }`}
         >
-          Intermedio
+          Avanzado
         </button>
       </div>
 
       {nivel && (
         <div className="space-y-6">
-          {/* Selección de tema */}
           <div className="bg-white p-6 rounded-lg shadow-md">
             <label className="block text-gray-700 font-medium mb-2">
               Seleccione un tema
@@ -125,18 +158,16 @@ const Formulario = () => {
               className="w-full p-2 border rounded"
             >
               <option value="">Seleccione un tema</option>
-              {(nivel === "principiante"
-                ? temasPrincipiante
-                : temasIntermedio
-              ).map((tema) => (
-                <option key={tema.id} value={tema.id}>
-                  {tema.nombre}
-                </option>
-              ))}
+              {(nivel === "P" ? temasPrincipiante : temasIntermedio).map(
+                (tema) => (
+                  <option key={tema.id} value={tema.id}>
+                    {tema.nombre}
+                  </option>
+                )
+              )}
             </select>
           </div>
 
-          {/* Formulario de información del tema */}
           {temaSeleccionado && (
             <div className="bg-white p-6 rounded-lg shadow-md">
               <div className="flex justify-between items-center mb-4">
@@ -153,7 +184,7 @@ const Formulario = () => {
                 )}
               </div>
 
-              {(mostrarFormularioTema || !temaInfo.descripcion) ? (
+              {mostrarFormularioTema || !temaInfo.descripcion ? (
                 <form onSubmit={handleSubmitTemaInfo} className="space-y-4">
                   <div>
                     <label className="block text-gray-700 font-medium mb-2">
@@ -212,7 +243,8 @@ const Formulario = () => {
                     type="submit"
                     className="w-full bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition-colors"
                   >
-                    {mostrarFormularioTema ? "Actualizar" : "Guardar"} Información
+                    {mostrarFormularioTema ? "Actualizar" : "Guardar"}{" "}
+                    Información
                   </button>
                 </form>
               ) : (
@@ -270,7 +302,6 @@ const Formulario = () => {
             </div>
           )}
 
-          {/* Formulario de preguntas */}
           {temaInfo.descripcion && !mostrarFormularioTema && (
             <div className="bg-white p-6 rounded-lg shadow-md">
               <h2 className="text-xl font-bold mb-4">Agregar Pregunta</h2>
@@ -331,7 +362,6 @@ const Formulario = () => {
             </div>
           )}
 
-          {/* Lista de preguntas y generación de PDF */}
           {preguntas.length > 0 && (
             <div className="bg-white p-6 rounded-lg shadow-md">
               <h2 className="text-xl font-bold mb-4">Preguntas Agregadas</h2>
@@ -358,7 +388,7 @@ const Formulario = () => {
                 ))}
               </div>
 
-              <div className="mt-6">
+              <div className="mt-6 space-x-4">
                 <PDFDownloadLink
                   document={
                     <QuestionsPDF
@@ -371,11 +401,32 @@ const Formulario = () => {
                   fileName={`cuestionario_${nivel}_${temaSeleccionado.nombre
                     .toLowerCase()
                     .replace(/ /g, "_")}.pdf`}
-                  className="inline-block bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors"
                 >
-                  {({ loading }) =>
-                    loading ? "Generando PDF..." : "Descargar PDF"
-                  }
+                  {({ blob, url, loading, error }) => {
+                    if (loading) {
+                      return "Generando PDF...";
+                    }
+                    if (error) {
+                      return "Error al generar PDF";
+                    }
+                    return (
+                      <div className="space-y-4">
+                        <button
+                          onClick={() => guardarPDF(blob)}
+                          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors"
+                        >
+                          Guardar PDF en Base de Datos
+                        </button>
+                        <a
+                          href={url}
+                          download
+                          className="inline-block bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition-colors"
+                        >
+                          Descargar PDF
+                        </a>
+                      </div>
+                    );
+                  }}
                 </PDFDownloadLink>
               </div>
             </div>
@@ -390,6 +441,7 @@ const Formulario = () => {
           </button>
         </Link>
       </div>
+
     </div>
   );
 };

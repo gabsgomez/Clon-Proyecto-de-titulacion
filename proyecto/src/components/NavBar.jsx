@@ -23,6 +23,11 @@ function Navbar() {
     navigate("/form"); // Navegar a la página de formulario
   };
 
+  const handlePrevisualizarClick = () => {
+    console.log("Navigating to /previsualizar");
+    navigate("/previsualizar"); // Navegar a la página de previsualización
+  }
+
   return (
     <nav className="navbar">
       <div className="logo">
@@ -58,6 +63,10 @@ function Navbar() {
           <button onClick={handleFormClick} className="register-button">
             Formulario
           </button>
+          <button onClick={handlePrevisualizarClick} className="register-button">
+            Previsualizar
+          </button>
+
         </div>
       )}
       <div className="hamburger" onClick={toggleMenu}>

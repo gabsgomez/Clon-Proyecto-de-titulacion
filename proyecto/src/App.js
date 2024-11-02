@@ -26,6 +26,7 @@ import ChatBot from "./components/ChatBot";
 import Videoconferencias from "./components/Videoconferencias"; // VideoCall and Chat
 import Formulario from "./components/Formulario";
 import ImageUploader from "./components/ImageUploader";
+import MiPagina from "./components/Previsualizar";
 
 import Acciones from "./components/acciones";
 import Fondos from "./components/fondos";
@@ -87,6 +88,7 @@ function MainContent() {
     "/economias",
     "/form",
     "/subir-imagenes",
+    "/previsualizar",
   ];
 
   return (
@@ -116,6 +118,7 @@ function MainContent() {
           <Route path="/economias" element={<Economias />} />
           <Route path="/form" element={<Formulario />} />
           <Route path="/subir-imagenes" element={<ImageUploader />} />
+          <Route path="/previsualizar" element={<MiPagina />} />
 
           {/* Ruta para la página de videoconferencias */}
           <Route path="/Videoconferencias" element={<Videoconferencias />} />
