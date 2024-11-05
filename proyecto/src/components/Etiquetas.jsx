@@ -7,7 +7,15 @@ const Etiquetas = () => {
   const [alumnos, setAlumnos] = useState([]);
   const [administrador, setAdministrador] = useState('');
   const [ultimaGeneracion, setUltimaGeneracion] = useState('');
+  const [alumnosSinGeneracion, setAlumnosSinGeneracion] = useState([]);
 
+  // Obtener alumnos de primer ingreso sin generación
+  const obtenerAlumnosSinGeneracion = () => {
+    fetch('http://localhost:5000/api/auth/alumnos/primer-ingreso-sin-generacion')
+      .then(response => response.json())
+      .then(data => setAlumnosSinGeneracion(data))
+      .catch(error => console.error('Error al obtener alumnos sin generación:', error));
+  };
   // Obtener generaciones existentes
   const obtenerGeneraciones = () => {
     fetch('http://localhost:5000/api/auth/etiquetas/generaciones')
@@ -76,12 +84,39 @@ const Etiquetas = () => {
   useEffect(() => {
     obtenerGeneraciones();
     obtenerUltimaGeneracion();
+    obtenerAlumnosSinGeneracion();
   }, []);
 
   return (
     <div className="etiquetas-container">
       <h1>Crear Nueva Generación</h1>
-  
+      
+      <div className="tabla_alumnos">
+        <h2>Alumnos de Primer Ingreso sin Generación</h2>
+        <table className="alumnos-table">
+          <thead>
+            <tr>
+              <th>ID Alumno</th>
+              <th>Nombre(s)</th>
+              <th>Apellido Paterno</th>
+              <th>ID Usuario</th>
+              <th>Tipo</th>
+            </tr>
+          </thead>
+          <tbody>
+            {alumnosSinGeneracion.map((alumno, index) => (
+              <tr key={index}>
+                <td>{alumno.ID_Alumno}</td>
+                <td>{alumno.Nombres}</td>
+                <td>{alumno.ApellidoPaterno}</td>
+                <td>{alumno.ID_Usuario}</td>
+                <td>{alumno.Tipo}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    <br></br>
       <input
         type="text"
         className="etiquetas-input"
@@ -115,5 +150,6 @@ const Etiquetas = () => {
     </div>
   );  
 };
+
 
 export default Etiquetas;

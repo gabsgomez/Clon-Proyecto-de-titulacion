@@ -49,13 +49,75 @@ import Finanzas from './components/Finanzas';
 import Habilitacion from './components/Habilitacion';
 import Etiquetas from './components/Etiquetas';
 
+import Formulario from "./components/Formulario";
+import ImageUploader from "./components/ImageUploader.jsx";
+import MiPagina from "./components/Previsualizar";
+
 function MainContent() {
   const location = useLocation();
 
-  const showNavbar = ["/", "/nosotros", "/experiencia", "/cursos", "/register", "/login", "/LoginAdministradores"];
-  const showNavbar2 = ["/classroom", "/AulaInteractiva", "/Documentos", "/Noticias", "/IndicadoresDeStock", "/Caja", "/ChatBot", "/Videoconferencias", "/acciones", "/fondos", "/futuros", "/indices", "/bonos", "/economias"];
-  const showFooter = ["/", "/nosotros", "/experiencia", "/Documentos", "/cursos", "/register", "/login", "/classroom", "/AulaInteractiva", "/Noticias", "/IndicadoresDeStock", "/Caja", "/ChatBot", "/Videoconferencias", "/acciones", "/fondos", "/futuros", "/indices", "/bonos", "/economias"];
-  const showNavBarAdmin = ["/administradores", "/Etiquetas","/AulaInteractivaAdmins", "/Habilitacion", "/Precios", "/DocumentosAdmins", "/Finanzas", "/Alumnos", "/VideoconferenciasAdmins"];
+  const showNavbar = [
+    "/", 
+    "/nosotros", 
+    "/experiencia", 
+    "/cursos", 
+    "/register", 
+    "/login", 
+    "/LoginAdministradores"
+  ];
+  const showNavbar2 = [
+    "/classroom", 
+    "/AulaInteractiva", 
+    "/Documentos", 
+    "/Noticias", 
+    "/IndicadoresDeStock", 
+    "/Caja", 
+    "/ChatBot", 
+    "/Videoconferencias", 
+    "/acciones", 
+    "/fondos", 
+    "/futuros", 
+    "/indices", 
+    "/bonos", 
+    "/economias"
+  ];
+  const showFooter = [
+    "/", 
+    "/nosotros", 
+    "/experiencia", 
+    "/Documentos", 
+    "/cursos", 
+    "/register", 
+    "/login", 
+    "/classroom", 
+    "/AulaInteractiva", 
+    "/Noticias", 
+    "/IndicadoresDeStock", 
+    "/Caja", 
+    "/ChatBot", 
+    "/Videoconferencias", 
+    "/acciones", 
+    "/fondos", 
+    "/futuros", 
+    "/indices", 
+    "/bonos", 
+    "/economias"
+  ];
+  const showNavBarAdmin = [
+    "/form",
+    "/subir-imagenes",
+    "/previsualizar",
+    "/administradores", 
+    "/Etiquetas", 
+    "/Formulario",
+    "/AulaInteractivaAdmins", 
+    "/Habilitacion", 
+    "/Precios", 
+    "/DocumentosAdmins", 
+    "/Finanzas", 
+    "/Alumnos", 
+    "/VideoconferenciasAdmins"
+  ];
   
   return (
     <>
@@ -105,7 +167,9 @@ function MainContent() {
           <Route path="/Precios" element={<Precios />} />
           <Route path="/Habilitacion" element={<Habilitacion />} />
           <Route path="/Etiquetas" element={<Etiquetas />} />
-          
+          <Route path="/form" element={<Formulario />} />
+          <Route path="/subir-imagenes" element={<ImageUploader />} />
+          <Route path="/previsualizar" element={<MiPagina />} />
         </Routes>
       </div>
       

@@ -1,11 +1,10 @@
-const db = require('../db/db');
 const nodemailer = require('nodemailer');
 const { generateVerificationCode } = require('../utils/codeGenerator');
+const { executeQuery } = require('../db/db.js');
 
 /*lo nuevo */
 
 const path = require('path');
-
 
 // Función para generar palabras aleatorias de 6 caracteres
 exports.generateVerificationCode = () => {
@@ -30,7 +29,7 @@ const generateContratoId = async () => {
 const obtenerUltimoIdContrato = () => {
   return new Promise((resolve, reject) => {
     const query = 'SELECT MAX(ID_Contrato) as maxId FROM contratos';
-    db.query(query, (err, results) => {
+    executeQuery(query, (err, results) => {
       if (err) {
         return reject(err);
       }
@@ -168,22 +167,22 @@ exports.register = async (req, res) => {
 
     const contratoId = await generateContratoId();
     const contratoQuery = 'INSERT INTO contratos (ID_Contrato) VALUES (?)';
-    await db.query(contratoQuery, [contratoId]);
+    await executeQuery(contratoQuery, [contratoId]);
 
     const usuarioGenerado = curp.substring(0, 10);
     const userQuery = 'INSERT INTO usuario (ID_Usuario, Correo, Contrasena, Tipo) VALUES (?, ?, ?, ?)';
-    await db.query(userQuery, [usuarioGenerado, correo, password, tipo]);
+    await executeQuery(userQuery, [usuarioGenerado, correo, password, tipo]);
 
     const studentQuery = 'INSERT INTO alumnos (Nombres, ApellidoPaterno, ApellidoMaterno, CURP, Sexo, Telefono, Usuario_Generado, Contrato) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
-    await db.query(studentQuery, [nombre, apellidoPaterno, apellidoMaterno, curp, sexo, telefono, usuarioGenerado, contratoId]);
+    await executeQuery(studentQuery, [nombre, apellidoPaterno, apellidoMaterno, curp, sexo, telefono, usuarioGenerado, contratoId]);
 
     const verificationCode = generateVerificationCode();
     const insertCodeQuery = 'INSERT INTO codigo_de_verificacion (Codigo) VALUES (?)';
-    const result = await db.query(insertCodeQuery, [verificationCode]);
+    const result = await executeQuery(insertCodeQuery, [verificationCode]);
     const codigoId = result.insertId;
 
     const updateUserQuery = 'UPDATE usuario SET Codigo_verificacion = ? WHERE ID_Usuario = ?';
-    await db.query(updateUserQuery, [codigoId, usuarioGenerado]);
+    await executeQuery(updateUserQuery, [codigoId, usuarioGenerado]);
 
     const transporter = nodemailer.createTransport({
       service: 'Gmail',
@@ -219,7 +218,7 @@ exports.login = async (req, res) => {
 
   try {
     const userQuery = 'SELECT * FROM usuario WHERE Correo = ? AND Contrasena = ?';
-    db.query(userQuery, [correo, password], (err, results) => {
+    executeQuery(userQuery, [correo, password], (err, results) => {
       if (err) {
         console.error('Error en la consulta de la base de datos:', err);
         return res.status(500).send('Error en la consulta de la base de datos');
@@ -235,7 +234,7 @@ exports.login = async (req, res) => {
       const verificationCode = generateVerificationCode();  // Generar nuevo código
 
       const insertCodeQuery = 'INSERT INTO codigo_de_verificacion (Codigo) VALUES (?)';
-      db.query(insertCodeQuery, [verificationCode], async (err, result) => {
+      executeQuery(insertCodeQuery, [verificationCode], async (err, result) => {
         if (err) {
           console.error('Error al insertar el código de verificación:', err);
           return res.status(500).send('Error al guardar el código de verificación');
@@ -244,7 +243,7 @@ exports.login = async (req, res) => {
         const codigoId = result.insertId;
 
         const updateUserQuery = 'UPDATE usuario SET Codigo_verificacion = ? WHERE ID_Usuario = ?';
-        db.query(updateUserQuery, [codigoId, userId], async (err) => {
+        executeQuery(updateUserQuery, [codigoId, userId], async (err) => {
           if (err) {
             console.error('Error al actualizar el código de verificación:', err);
             return res.status(500).send('Error al actualizar el código de verificación');
@@ -280,7 +279,6 @@ exports.login = async (req, res) => {
 ///DEBO CAMBIAR EL METODO DE LOGIN
 exports.loginadministradores = async (req, res) => {
   const { id_Administrador, usuario_Administrador } = req.body;
-
   // Validación de entrada
   if (!id_Administrador || !usuario_Administrador) {
     return res.status(400).json({ error: 'Por favor, proporciona ID y usuario' });
@@ -290,7 +288,8 @@ exports.loginadministradores = async (req, res) => {
     // Consulta para verificar el administrador
     const adminQuery = 'SELECT * FROM administradores WHERE ID_Administradores = ? AND Usuario_Admin = ?';
     
-    db.query(adminQuery, [id_Administrador, usuario_Administrador], (err, results) => {
+    executeQuery(adminQuery, [id_Administrador, usuario_Administrador], (err, results) => {
+      console.log(results);
       if (err) {
         console.error('Error en la consulta de la base de datos:', err);
         return res.status(500).json({ error: 'Error en la consulta de la base de datos' });
@@ -322,7 +321,7 @@ exports.verifyCode = async (req, res) => {
 
   try {
     const userQuery = 'SELECT ID_Usuario, Codigo_verificacion FROM usuario WHERE Correo = ?';
-    db.query(userQuery, [correo], (err, userResults) => {
+    executeQuery(userQuery, [correo], (err, userResults) => {
       if (err) {
         console.error('Error en la consulta de la base de datos:', err);
         return res.status(500).send('Error en el servidor');
@@ -336,7 +335,7 @@ exports.verifyCode = async (req, res) => {
       const codigoId = userResults[0].Codigo_verificacion;
 
       const codigoQuery = 'SELECT * FROM codigo_de_verificacion WHERE ID_codigo = ? AND Codigo = ?';
-      db.query(codigoQuery, [codigoId, codigo], (err, codeResults) => {
+      executeQuery(codigoQuery, [codigoId, codigo], (err, codeResults) => {
         if (err) {
           console.error('Error en la consulta de la base de datos:', err);
           return res.status(500).send('Error en el servidor');
@@ -364,7 +363,7 @@ exports.requestPasswordReset = async (req, res) => {
 
   try {
     const userQuery = 'SELECT ID_Usuario FROM usuario WHERE Correo = ?';
-    db.query(userQuery, [correo], async (err, results) => {
+    executeQuery(userQuery, [correo], async (err, results) => {
       if (err) {
         console.error('Error en la consulta de la base de datos:', err);
         return res.status(500).send('Error en el servidor');
@@ -378,11 +377,11 @@ exports.requestPasswordReset = async (req, res) => {
       const verificationCode = generateVerificationCode();
 
       const insertCodeQuery = 'INSERT INTO codigo_de_verificacion (Codigo) VALUES (?)';
-      const result = await db.query(insertCodeQuery, [verificationCode]);
+      const result = await executeQuery(insertCodeQuery, [verificationCode]);
       const codigoId = result.insertId;
 
       const updateUserQuery = 'UPDATE usuario SET Codigo_verificacion = ? WHERE ID_Usuario = ?';
-      await db.query(updateUserQuery, [codigoId, userId]);
+      await executeQuery(updateUserQuery, [codigoId, userId]);
 
       const transporter = nodemailer.createTransport({
         service: 'Gmail',
@@ -418,7 +417,7 @@ exports.verifyResetCode = async (req, res) => {
 
   try {
     const userQuery = 'SELECT ID_Usuario, Codigo_verificacion FROM usuario WHERE Correo = ?';
-    db.query(userQuery, [correo], (err, userResults) => {
+    executeQuery(userQuery, [correo], (err, userResults) => {
       if (err) {
         console.error('Error en la consulta de la base de datos:', err);
         return res.status(500).send('Error en el servidor');
@@ -432,7 +431,7 @@ exports.verifyResetCode = async (req, res) => {
       const codigoId = userResults[0].Codigo_verificacion;
 
       const codigoQuery = 'SELECT * FROM codigo_de_verificacion WHERE ID_codigo = ? AND Codigo = ?';
-      db.query(codigoQuery, [codigoId, codigo], (err, codeResults) => {
+      executeQuery(codigoQuery, [codigoId, codigo], (err, codeResults) => {
         if (err) {
           console.error('Error en la consulta de la base de datos:', err);
           return res.status(500).send('Error en el servidor');
@@ -460,7 +459,7 @@ exports.resetPassword = async (req, res) => {
 
   try {
     const userQuery = 'SELECT ID_Usuario, Codigo_verificacion FROM usuario WHERE Correo = ?';
-    db.query(userQuery, [correo], (err, userResults) => {
+    executeQuery(userQuery, [correo], (err, userResults) => {
       if (err) {
         console.error('Error en la consulta de la base de datos:', err);
         return res.status(500).send('Error en el servidor');
@@ -474,7 +473,7 @@ exports.resetPassword = async (req, res) => {
       const codigoId = userResults[0].Codigo_verificacion;
 
       const codigoQuery = 'SELECT * FROM codigo_de_verificacion WHERE ID_codigo = ? AND Codigo = ?';
-      db.query(codigoQuery, [codigoId, codigo], async (err, codeResults) => {
+      executeQuery(codigoQuery, [codigoId, codigo], async (err, codeResults) => {
         if (err) {
           console.error('Error en la consulta de la base de datos:', err);
           return res.status(500).send('Error en el servidor');
@@ -485,7 +484,7 @@ exports.resetPassword = async (req, res) => {
         }
 
         const updatePasswordQuery = 'UPDATE usuario SET Contrasena = ? WHERE ID_Usuario = ?';
-        await db.query(updatePasswordQuery, [nuevaContrasena, userId]);
+        await executeQuery(updatePasswordQuery, [nuevaContrasena, userId]);
 
         res.status(200).send('Contraseña restablecida exitosamente');
       });
@@ -536,7 +535,7 @@ exports.uploadFiles = (req, res) => {
           const maxId = await obtenerUltimoIdContrato();
 
           const query = 'UPDATE contratos SET Documentos = ?, Foto_Rostro = ? WHERE ID_Contrato = ?';
-          pool.query(query, [pdfBuffer, photoBuffer,maxId], (err, results) => {
+          executeQuery(query, [pdfBuffer, photoBuffer,maxId], (err, results) => {
               if (err) {
                   console.error('Error al guardar en la base de datos:', err);
                   return res.status(500).send('Error al guardar en la base de datos');
@@ -560,7 +559,7 @@ exports.getLatestUserType = async (req, res) => {
     const query = 'SELECT Tipo FROM usuario ORDER BY fecha_creacion DESC LIMIT 1';
     
     // Ejecutar la consulta
-    db.query(query, (err, results) => {
+    executeQuery(query, (err, results) => {
       if (err) {
         console.error('Error ejecutando la consulta:', err);
         return res.status(500).send('Error ejecutando la consulta');
@@ -585,7 +584,7 @@ exports.getLatestUserType = async (req, res) => {
 // Obtener todos los precios
 exports.getPrecios = async (req, res) => {
   try {
-    const precios = await pool.query('SELECT * FROM Precios');
+    const precios = await executeQuery('SELECT * FROM Precios');
     res.json(precios);
   } catch (error) {
     res.status(500).json({ error: 'Error al obtener los precios' });
@@ -599,7 +598,7 @@ exports.updatePrecio = async (req, res) => {
   const { price } = req.body;
 
   try {
-    const result = await pool.query('UPDATE Precios SET price = ? WHERE id = ?', [price, id]);
+    const result = await executeQuery('UPDATE Precios SET price = ? WHERE id = ?', [price, id]);
     
     if (result.affectedRows === 0) {
       return res.status(404).json({ error: 'El precio no fue encontrado' });
@@ -615,7 +614,7 @@ exports.updatePrecio = async (req, res) => {
 exports.getPrecios = async (req, res) => {
   try {
     const query = 'SELECT * FROM precios'; // Asegúrate de que esta tabla exista
-    db.query(query, (err, results) => {
+    executeQuery(query, (err, results) => {
       if (err) {
         console.error('Error en la consulta de la base de datos:', err);
         return res.status(500).json({ error: 'Error en la consulta de la base de datos' });
@@ -636,7 +635,7 @@ exports.updatePrecio = async (req, res) => {
 
   try {
     // Actualizamos solo el campo de precio
-    const result = await pool.query('UPDATE precios SET price = ? WHERE id = ?', [price, id]);
+    const result = await executeQuery('UPDATE precios SET price = ? WHERE id = ?', [price, id]);
     if (result.affectedRows === 0) {
       return res.status(404).json({ error: 'Precio no encontrado' });
     }
@@ -655,7 +654,7 @@ exports.getUsuariosPorTipo = async (req, res) => {
 
   try {
     // Consulta a la base de datos para obtener los usuarios junto con nombres y apellidos correctos
-    const result = await pool.query(`
+    const result = await executeQuery(`
       SELECT u.ID_Usuario, u.Correo, u.fecha_creacion, a.Nombres, a.ApellidoPaterno, a.ApellidoMaterno
       FROM usuario u
       JOIN alumnos a ON u.ID_Usuario = a.Usuario_Generado
@@ -706,7 +705,7 @@ exports.getFinanzas = async (req, res) => {
       JOIN alumnos a ON c.Alumno = a.ID_Alumno
     `;
 
-    db.query(query, (err, results) => {
+    executeQuery(query, (err, results) => {
       if (err) {
         console.error('Error en la consulta de finanzas:', err);
         return res.status(500).json({ error: 'Error en la consulta de finanzas' });
@@ -731,7 +730,7 @@ exports.getFinanzas = async (req, res) => {
       FROM caja c 
       JOIN alumnos a ON c.Alumno = a.ID_Alumno
     `;
-    db.query(query, (err, results) => {
+    executeQuery(query, (err, results) => {
       if (err) {
         console.error('Error en la consulta de finanzas:', err);
         return res.status(500).json({ error: 'Error en la consulta de finanzas' });
@@ -754,7 +753,7 @@ exports.getFinanzasSemanal = async (req, res) => {
       JOIN alumnos a ON c.Alumno = a.ID_Alumno
       WHERE c.Fecha_De_Pago BETWEEN CURDATE() - INTERVAL 7 DAY AND CURDATE()
     `;
-    db.query(query, (err, results) => {
+    executeQuery(query, (err, results) => {
       if (err) {
         console.error('Error en la consulta de finanzas semanal:', err);
         return res.status(500).json({ error: 'Error en la consulta de finanzas semanal' });
@@ -777,7 +776,7 @@ exports.getFinanzasMensual = async (req, res) => {
       JOIN alumnos a ON c.Alumno = a.ID_Alumno
       WHERE c.Fecha_De_Pago BETWEEN CURDATE() - INTERVAL 1 MONTH AND CURDATE()
     `;
-    db.query(query, (err, results) => {
+    executeQuery(query, (err, results) => {
       if (err) {
         console.error('Error en la consulta de finanzas mensual:', err);
         return res.status(500).json({ error: 'Error en la consulta de finanzas mensual' });
@@ -800,7 +799,7 @@ exports.getFinanzasSemestral = async (req, res) => {
       JOIN alumnos a ON c.Alumno = a.ID_Alumno
       WHERE c.Fecha_De_Pago BETWEEN CURDATE() - INTERVAL 6 MONTH AND CURDATE()
     `;
-    db.query(query, (err, results) => {
+    executeQuery(query, (err, results) => {
       if (err) {
         console.error('Error en la consulta de finanzas semestral:', err);
         return res.status(500).json({ error: 'Error en la consulta de finanzas semestral' });
@@ -822,7 +821,7 @@ exports.getUsuariosPorEstatus = async (req, res) => {
 
   try {
     // Consulta a la base de datos para obtener los usuarios con el estatus correspondiente
-    const result = await pool.query(
+    const result = await executeQuery(
       `SELECT u.ID_Usuario, u.Correo, u.Tipo, u.fecha_creacion, a.Nombres, a.ApellidoPaterno, a.ApellidoMaterno
       FROM usuario u
       JOIN alumnos a ON u.ID_Usuario = a.Usuario_Generado
@@ -848,7 +847,7 @@ exports.habilitarUsuario = async (req, res) => {
 
   try {
     // Actualiza el estatus del usuario a 'Habilitado'
-    await pool.query("UPDATE Usuario SET Estatus = 'Habilitado' WHERE ID_Usuario = ?", [id]);
+    await executeQuery("UPDATE Usuario SET Estatus = 'Habilitado' WHERE ID_Usuario = ?", [id]);
 
     res.status(200).json({ message: 'Usuario habilitado correctamente' });
   } catch (error) {
@@ -863,7 +862,7 @@ exports.deshabilitarUsuario = async (req, res) => {
 
   try {
     // Actualiza el estatus del usuario a 'Deshabilitado'
-    await pool.query("UPDATE Usuario SET Estatus = 'Deshabilitado' WHERE ID_Usuario = ?", [id]);
+    await executeQuery("UPDATE Usuario SET Estatus = 'Deshabilitado' WHERE ID_Usuario = ?", [id]);
 
     res.status(200).json({ message: 'Usuario deshabilitado correctamente' });
   } catch (error) {
@@ -875,7 +874,7 @@ exports.deshabilitarUsuario = async (req, res) => {
 
 exports.obtenerGeneraciones = async (req, res) => {
   try {
-    const result = await pool.query('SELECT DISTINCT Nombre_Gen FROM manejados ORDER BY ID_Generacion');
+    const result = await executeQuery('SELECT DISTINCT Nombre_Gen FROM manejados ORDER BY ID_Generacion');
     res.status(200).json(result);
   } catch (error) {
     console.error('Error al obtener generaciones:', error);
@@ -883,47 +882,14 @@ exports.obtenerGeneraciones = async (req, res) => {
   }
 };
 
-/*
-FUNCIONA A MEDIAS, NO LO BORRO PORQUE SIRVE COMO REFERENCIA Y QUIZAS LO OCUPE
 
 exports.crearGeneracion = async (req, res) => {
   const { Nombre_Gen, Administrador, alumnos } = req.body;
-  
-  // Verifica que el número de alumnos esté dentro del rango permitido
+
+  // Validar que el número de alumnos esté entre 8 y 32
   if (alumnos.length < 8 || alumnos.length > 32) {
-    return res.status(400).json({ error: 'El número de alumnos debe estar entre 8 y 32' });
+    return res.status(400).json({ message: 'La generación debe tener entre 8 y 32 alumnos.' });
   }
-
-  // Inicia una transacción
-  await pool.query('START TRANSACTION');
-  
-  try {
-    // Insertar cada alumno en la tabla manejados
-    const values = alumnos.map((idAlumno) => ('${Nombre_Gen}', '${Administrador}', '${idAlumno}')).join(", ");
-    
-    const insertQuery = `
-      INSERT INTO manejados (Nombre_Gen, Administrador, ID_Alumno)
-      VALUES ${values};
-      `
-    ;
-    
-    await pool.query(insertQuery);
-
-    // Finalizar la transacción
-    await pool.query('COMMIT');
-    res.status(200).json({ message: 'Generación creada exitosamente' });
-  } catch (error) {
-    // En caso de error, hacer rollback
-    await pool.query('ROLLBACK');
-    console.error("Error al crear generación:", error);
-    res.status(500).json({ error: 'Error al crear generación' });
-  }
-};
-
-*/
-
-exports.crearGeneracion = async (req, res) => {
-  const { Nombre_Gen, Administrador, alumnos } = req.body;
 
   // Construye los valores a insertar
   const valores = alumnos
@@ -936,7 +902,7 @@ exports.crearGeneracion = async (req, res) => {
   `;
 
   try {
-    await pool.query(sql);
+    await executeQuery(sql);
     res.status(200).json({ message: 'Generación creada exitosamente' });
   } catch (error) {
     console.error("Error al crear generación:", error);
@@ -948,7 +914,7 @@ exports.crearGeneracion = async (req, res) => {
 // Función para obtener el nombre de la última generación en orden alfabético
 exports.obtenerUltimaGeneracion = async () => {
   try {
-    const result = await pool.query('SELECT Nombre_Gen FROM manejados ORDER BY ID_Generacion DESC LIMIT 1');
+    const result = await executeQuery('SELECT Nombre_Gen FROM manejados ORDER BY ID_Generacion DESC LIMIT 1');
     return result[0]?.Nombre_Gen || null;  // Devuelve el nombre de la última generación o null si no existe
   } catch (error) {
     console.error('Error al obtener la última generación:', error);
@@ -974,5 +940,32 @@ exports.validarNuevaGeneracion = async () => {
   } catch (error) {
     console.error('Error en la validación de la nueva generación:', error);
     throw error;
+  }
+};
+
+
+exports.obtenerAlumnosPrimerIngresoSinGeneracion = async (req, res) => {
+  try {
+    const result = await executeQuery(`
+      SELECT 
+        alumnos.ID_Alumno, 
+        alumnos.Nombres, 
+        alumnos.ApellidoPaterno,
+        usuario.ID_Usuario, 
+        usuario.Tipo, 
+        usuario.estatus, 
+        alumnos.ID_Generacion 
+      FROM 
+        alumnos 
+      JOIN 
+        usuario ON alumnos.Usuario_Generado = usuario.ID_Usuario 
+      WHERE 
+        usuario.estatus = 'Primer Ingreso' 
+        AND alumnos.ID_Generacion IS NULL
+    `);
+    res.status(200).json(result);
+  } catch (error) {
+    console.error('Error al obtener alumnos de primer ingreso sin generación:', error);
+    res.status(500).json({ error: 'Error al obtener alumnos de primer ingreso sin generación' });
   }
 };

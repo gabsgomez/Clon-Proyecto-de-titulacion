@@ -14,6 +14,16 @@ function NavbarAdmin() {
     navigate('/login'); // Navegar a la página de login
   };
 
+  const handleFormClick = () => {
+    console.log("Navigating to /form");
+    navigate("/form"); // Navegar a la página de formulario
+  };
+
+  const handlePrevisualizarClick = () => {
+    console.log("Navigating to /previsualizar");
+    navigate("/previsualizar"); // Navegar a la página de previsualización
+  }
+
   return (
     <nav className="navbar">
       <div className="logo">
@@ -28,7 +38,7 @@ function NavbarAdmin() {
           <div className="dropdown-menu">
             <Link to="/Alumnos">Alumnos</Link>
             <Link to="/Etiquetas">Etiquetas</Link>
-            <Link to="/Formularios">Formularios</Link>
+            <Link to="/form">Formulario</Link>
             <Link to="/Actividades">Actividades</Link>
             <Link to="/DocumentosAdmins">Documentos</Link>
             <Link to="/Habilitacion">Habilitación</Link>

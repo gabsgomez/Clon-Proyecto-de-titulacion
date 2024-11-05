@@ -4,22 +4,24 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const authRoutes = require('./routes/auth');
+const formRoutes = require("./routes/formulario")
 const authController = require('./controllers/authController');
 const app = express();
 const server = require('http').createServer(app);
 
 
 
-const mysql = require('mysql2');
+//const mysql = require('mysql2/promise');
 
 
 // Conexión a la base de datos MySQL
-const connection = mysql.createConnection({
-  host: 'localhost', 
-  user: 'root', 
-  password: '', 
-  database: 'marathon_institudee' 
-});
+// const connection = mysql.createConnection({
+//   host: 'localhost', 
+//   user: 'root', 
+//   password: '', 
+//   database: 'marathon_institudee',
+//   port: 3306, 
+// });
 
 
 // Middleware
@@ -29,6 +31,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // Rutas de autenticación
 app.use('/api/auth', authRoutes);
+app.use('/api/form', formRoutes);
 
 // Obtener el tipo de usuario más reciente
 app.get('/api/latest-user-type', authController.getLatestUserType);

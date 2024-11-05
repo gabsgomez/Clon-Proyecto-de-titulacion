@@ -20,7 +20,7 @@ const LoginAdministradores = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+    console.log(formData);
     try {
       const response = await fetch("http://localhost:5000/api/auth/loginadministradores", {
         method: "POST",
@@ -41,7 +41,7 @@ const LoginAdministradores = () => {
       }
   
       const data = await response.json();
-  
+      console.log(data)
       if (response.status === 200) {
         console.log("Inicio de sesión de administrador exitoso");
         navigate("/administradores");

@@ -64,7 +64,7 @@ const Alumnos = () => {
       <h1>Filtrar Usuarios</h1>
 
       {/* Barra de búsqueda */}
-      <input
+      {/*<input
         type="text"
         placeholder="Buscar por Nombre o Apellido"
         value={searchTerm}

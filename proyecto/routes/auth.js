@@ -1,6 +1,13 @@
 const express = require('express');
 const router = express.Router();
+const multer = require('multer');
 const authController = require('../controllers/authController');
+
+const asyncHandler = fn => (req, res, next) => {
+  return Promise
+      .resolve(fn(req, res, next))
+      .catch(next);
+};
 
 //const authMiddleware = require('../controllers/authMiddleware');
 
@@ -18,7 +25,7 @@ router.post('/reset-password', authController.resetPassword);
 //lo nuevo
 router.post('/latest-user-type', authController.getLatestUserType);
 //////
-router.post('/loginadministradores', authController.loginadministradores);
+router.post('/loginadministradores', asyncHandler(authController.loginadministradores));
 
 router.post('/upload', authController.uploadFiles);
 
@@ -54,6 +61,7 @@ router.put('/usuarios/deshabilitar/:id', authController.deshabilitarUsuario);
 
 router.get('/etiquetas/generaciones', authController.obtenerGeneraciones);
 router.post('/etiquetas/crear', authController.crearGeneracion);
+router.get('/alumnos/primer-ingreso-sin-generacion', authController.obtenerAlumnosPrimerIngresoSinGeneracion);
 
 router.get('/etiquetas/ultima-generacion', async (req, res) => {
     try {
@@ -63,6 +71,7 @@ router.get('/etiquetas/ultima-generacion', async (req, res) => {
       res.status(500).json({ error: 'Error al obtener la última generación' });
     }
   });
-  
+
+
 
 module.exports = router;
