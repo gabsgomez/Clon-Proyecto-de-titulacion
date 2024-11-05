@@ -1,6 +1,6 @@
 const nodemailer = require('nodemailer');
 const { generateVerificationCode } = require('../utils/codeGenerator');
-const { executeQuery } = require('../db/db.js');
+const { executeQuery } = require('../db/db');
 
 /*lo nuevo */
 
@@ -129,6 +129,7 @@ function validarPassword(password) {
 // Función para registrar un nuevo usuario
 exports.register = async (req, res) => {
   const { nombre, apellidoPaterno, apellidoMaterno, sexo, curp, telefono, correo, password, tipo } = req.body;
+  
   if (!nombre || !apellidoPaterno || !apellidoMaterno || !sexo || !curp || !telefono || !correo || !password || !tipo) {
     return res.status(400).send('Por favor, llena todos los campos');
   }
@@ -160,29 +161,93 @@ exports.register = async (req, res) => {
 
     
 
+    try {
+      // Iniciar transacción
+      await executeQuery('START TRANSACTION');
+  
+      // Generar ID de contrato
+      const contratoId = await obtenerUltimoIdContrato() + 1;
+      
+      // Insertar contrato
+      await executeQuery('INSERT INTO contratos (ID_Contrato) VALUES (?)', [contratoId]);
+  
+      // Generar usuario
+      const usuarioGenerado = curp.substring(0, 10);
+      
+      // Insertar usuario
+      await executeQuery(
+        'INSERT INTO usuario (ID_Usuario, Correo, Contrasena, Tipo) VALUES (?, ?, ?, ?)',
+        [usuarioGenerado, correo, password, tipo]
+      );
+  
+      // Insertar alumno
+      await executeQuery(
+        'INSERT INTO alumnos (Nombres, ApellidoPaterno, ApellidoMaterno, CURP, Sexo, Telefono, Usuario_Generado, Contrato) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+        [nombre, apellidoPaterno, apellidoMaterno, curp, sexo, telefono, usuarioGenerado, contratoId]
+      );
+  
+      // Generar y guardar código de verificación
+      const verificationCode = exports.generateVerificationCode();
+      const codeResult = await executeQuery('INSERT INTO codigo_de_verificacion (Codigo) VALUES (?)', [verificationCode]);
+      const codigoId = codeResult.insertId;
+  
+      // Actualizar usuario con código de verificación
+      await executeQuery('UPDATE usuario SET Codigo_verificacion = ? WHERE ID_Usuario = ?', [codigoId, usuarioGenerado]);
+  
+      // Confirmar transacción
+      await executeQuery('COMMIT');
+  
+      // Enviar correo
+      const transporter = nodemailer.createTransport({
+        service: 'Gmail',
+        auth: {
+          user: 'a20300685@ceti.mx',
+          pass: 'fcxhatvwmyijejus'
+        }
+      });
+  
+      await transporter.sendMail({
+        from: 'a20300685@ceti.mx',
+        to: correo,
+        subject: 'Código de verificación',
+        text: `Tu código de verificación es: ${verificationCode}`
+      });
+  
+      res.status(201).json({ message: 'Usuario registrado exitosamente' });
+    } catch (error) {
+      // Revertir transacción en caso de error
+      await executeQuery('ROLLBACK');
+      console.error('Error en el registro:', error);
+      res.status(500).json({ message: 'Error en el registro de usuario' });
+    }
+  };
+
+// Función para iniciar sesión
+
+exports.login = async (req, res) => {
+  const { correo, password } = req.body;
+  
+  if (!correo || !password) {
+    return res.status(400).send('Por favor, proporciona correo y contraseña');
+  }
+
   try {
+    const userQuery = 'SELECT * FROM usuario WHERE Correo = ? AND Contrasena = ?';
+    const results = await executeQuery(userQuery, [correo, password]);
 
-    
-    
+    if (!results || results.length === 0) {
+      return res.status(401).send('Correo o contraseña incorrectos');
+    }
 
-    const contratoId = await generateContratoId();
-    const contratoQuery = 'INSERT INTO contratos (ID_Contrato) VALUES (?)';
-    await executeQuery(contratoQuery, [contratoId]);
+    const userId = results[0].ID_Usuario;
+    const verificationCode = exports.generateVerificationCode();
 
-    const usuarioGenerado = curp.substring(0, 10);
-    const userQuery = 'INSERT INTO usuario (ID_Usuario, Correo, Contrasena, Tipo) VALUES (?, ?, ?, ?)';
-    await executeQuery(userQuery, [usuarioGenerado, correo, password, tipo]);
-
-    const studentQuery = 'INSERT INTO alumnos (Nombres, ApellidoPaterno, ApellidoMaterno, CURP, Sexo, Telefono, Usuario_Generado, Contrato) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
-    await executeQuery(studentQuery, [nombre, apellidoPaterno, apellidoMaterno, curp, sexo, telefono, usuarioGenerado, contratoId]);
-
-    const verificationCode = generateVerificationCode();
     const insertCodeQuery = 'INSERT INTO codigo_de_verificacion (Codigo) VALUES (?)';
-    const result = await executeQuery(insertCodeQuery, [verificationCode]);
-    const codigoId = result.insertId;
+    const codeResult = await executeQuery(insertCodeQuery, [verificationCode]);
+    const codigoId = codeResult.insertId;
 
     const updateUserQuery = 'UPDATE usuario SET Codigo_verificacion = ? WHERE ID_Usuario = ?';
-    await executeQuery(updateUserQuery, [codigoId, usuarioGenerado]);
+    await executeQuery(updateUserQuery, [codigoId, userId]);
 
     const transporter = nodemailer.createTransport({
       service: 'Gmail',
@@ -192,83 +257,14 @@ exports.register = async (req, res) => {
       }
     });
 
-    const mailOptions = {
+    await transporter.sendMail({
       from: 'a20300685@ceti.mx',
       to: correo,
       subject: 'Código de verificación',
       text: `Tu código de verificación es: ${verificationCode}`
-    };
-
-    await transporter.sendMail(mailOptions);
-
-    res.status(201).send('Usuario registrado');
-  } catch (err) {
-    console.error(err);
-    res.status(500).send('Error en el servidor');
-  }
-};
-
-// Función para iniciar sesión
-
-exports.login = async (req, res) => {
-  const { correo, password } = req.body;
-  if (!correo || !password) {
-    return res.status(400).send('Por favor, proporciona correo y contraseña');
-  }
-
-  try {
-    const userQuery = 'SELECT * FROM usuario WHERE Correo = ? AND Contrasena = ?';
-    executeQuery(userQuery, [correo, password], (err, results) => {
-      if (err) {
-        console.error('Error en la consulta de la base de datos:', err);
-        return res.status(500).send('Error en la consulta de la base de datos');
-      }
-
-      if (results.length === 0) {
-        return res.status(401).send('Correo o contraseña incorrectos');
-      }
-
-      const userId = results[0].ID_Usuario;
-      
-      
-      const verificationCode = generateVerificationCode();  // Generar nuevo código
-
-      const insertCodeQuery = 'INSERT INTO codigo_de_verificacion (Codigo) VALUES (?)';
-      executeQuery(insertCodeQuery, [verificationCode], async (err, result) => {
-        if (err) {
-          console.error('Error al insertar el código de verificación:', err);
-          return res.status(500).send('Error al guardar el código de verificación');
-        }
-
-        const codigoId = result.insertId;
-
-        const updateUserQuery = 'UPDATE usuario SET Codigo_verificacion = ? WHERE ID_Usuario = ?';
-        executeQuery(updateUserQuery, [codigoId, userId], async (err) => {
-          if (err) {
-            console.error('Error al actualizar el código de verificación:', err);
-            return res.status(500).send('Error al actualizar el código de verificación');
-          }
-
-          const transporter = nodemailer.createTransport({
-            service: 'Gmail',
-            auth: {
-              user: 'a20300685@ceti.mx',
-              pass: 'fcxhatvwmyijejus'
-            }
-          });
-
-          const mailOptions = {
-            from: 'a20300685@ceti.mx',
-            to: correo,
-            subject: 'Código de verificación',
-            text: ` Tu código de verificación es: ${verificationCode}`
-          };
-
-          await transporter.sendMail(mailOptions);
-          res.status(200).send('Correo y contraseña correctos, ingresa el código de verificación');
-        });
-      });
     });
+
+    res.status(200).send('Correo y contraseña correctos, ingresa el código de verificación');
   } catch (error) {
     console.error('Error al iniciar sesión:', error);
     res.status(500).send('Error al iniciar sesión');
@@ -277,133 +273,129 @@ exports.login = async (req, res) => {
 
 
 ///DEBO CAMBIAR EL METODO DE LOGIN
+
 exports.loginadministradores = async (req, res) => {
-  const { id_Administrador, usuario_Administrador } = req.body;
-  // Validación de entrada
-  if (!id_Administrador || !usuario_Administrador) {
-    return res.status(400).json({ error: 'Por favor, proporciona ID y usuario' });
-  }
+    const { id_Administrador, usuario_Administrador } = req.body;
 
-  try {
-    // Consulta para verificar el administrador
-    const adminQuery = 'SELECT * FROM administradores WHERE ID_Administradores = ? AND Usuario_Admin = ?';
-    
-    executeQuery(adminQuery, [id_Administrador, usuario_Administrador], (err, results) => {
-      console.log(results);
-      if (err) {
-        console.error('Error en la consulta de la base de datos:', err);
-        return res.status(500).json({ error: 'Error en la consulta de la base de datos' });
-      }
+    // Validación de entrada
+    if (!id_Administrador || !usuario_Administrador) {
+        return res.status(400).json({ 
+            success: false,
+            message: 'Por favor, proporciona ID y usuario' 
+        });
+    }
 
-      if (results.length === 0) {
-        return res.status(401).json({ error: 'ID o usuario incorrectos' });
-      }
+    try {
+        // Consulta para verificar el administrador
+        const query = 'SELECT * FROM administradores WHERE ID_Administradores = ? AND Usuario_Admin = ?';
+        const results = await executeQuery(query, [id_Administrador, usuario_Administrador]);
 
-      // Si se encuentra el administrador
-      return res.status(200).json({ message: 'Inicio de sesión exitoso' });
-    });
+        // Log para debugging
+        console.log('Resultado de la consulta:', results);
 
-  } catch (error) {
-    console.error('Error al iniciar sesión:', error);
-    return res.status(500).json({ error: 'Error al iniciar sesión' });
-  }
+        if (!results || results.length === 0) {
+            return res.status(401).json({ 
+                success: false,
+                message: 'ID o usuario incorrectos' 
+            });
+        }
+
+        // Si se encuentra el administrador
+        return res.status(200).json({ 
+            success: true,
+            message: 'Inicio de sesión exitoso',
+            data: {
+                id: results[0].id_administrador,
+                usuario: results[0].usuario_administrador
+            }
+        });
+
+    } catch (error) {
+        console.error('Error al iniciar sesión:', error);
+        return res.status(500).json({ 
+            success: false,
+            message: 'Error al iniciar sesión',
+            error: error.message 
+        });
+    }
 };
-
-
-
 
 // Función para verificar el código de verificación durante el inicio de sesión
 exports.verifyCode = async (req, res) => {
   const { correo, codigo } = req.body;
+  
   if (!correo || !codigo) {
     return res.status(400).send('Por favor, llena todos los campos');
   }
 
   try {
     const userQuery = 'SELECT ID_Usuario, Codigo_verificacion FROM usuario WHERE Correo = ?';
-    executeQuery(userQuery, [correo], (err, userResults) => {
-      if (err) {
-        console.error('Error en la consulta de la base de datos:', err);
-        return res.status(500).send('Error en el servidor');
-      }
+    const userResults = await executeQuery(userQuery, [correo]);
 
-      if (userResults.length === 0) {
-        return res.status(401).send('Usuario no encontrado');
-      }
+    if (!userResults || userResults.length === 0) {
+      return res.status(401).send('Usuario no encontrado');
+    }
 
-      const userId = userResults[0].ID_Usuario;
-      const codigoId = userResults[0].Codigo_verificacion;
+    const userId = userResults[0].ID_Usuario;
+    const codigoId = userResults[0].Codigo_verificacion;
 
-      const codigoQuery = 'SELECT * FROM codigo_de_verificacion WHERE ID_codigo = ? AND Codigo = ?';
-      executeQuery(codigoQuery, [codigoId, codigo], (err, codeResults) => {
-        if (err) {
-          console.error('Error en la consulta de la base de datos:', err);
-          return res.status(500).send('Error en el servidor');
-        }
+    const codigoQuery = 'SELECT * FROM codigo_de_verificacion WHERE ID_codigo = ? AND Codigo = ?';
+    const codeResults = await executeQuery(codigoQuery, [codigoId, codigo]);
 
-        if (codeResults.length === 0) {
-          return res.status(401).send('Código de verificación incorrecto');
-        }
+    if (!codeResults || codeResults.length === 0) {
+      return res.status(401).send('Código de verificación incorrecto');
+    }
 
-        res.status(200).send('Verificación exitosa');
-      });
-    });
-  } catch (err) {
-    console.error('Error al verificar el código:', err);
+    res.status(200).send('Verificación exitosa');
+  } catch (error) {
+    console.error('Error al verificar el código:', error);
     res.status(500).send('Error en el servidor');
   }
 };
 
+
+
 // Función para solicitar el restablecimiento de contraseña
 exports.requestPasswordReset = async (req, res) => {
   const { correo } = req.body;
+  
   if (!correo) {
     return res.status(400).send('Por favor, proporciona tu correo');
   }
 
   try {
-    const userQuery = 'SELECT ID_Usuario FROM usuario WHERE Correo = ?';
-    executeQuery(userQuery, [correo], async (err, results) => {
-      if (err) {
-        console.error('Error en la consulta de la base de datos:', err);
-        return res.status(500).send('Error en el servidor');
+    const userResults = await executeQuery('SELECT ID_Usuario FROM usuario WHERE Correo = ?', [correo]);
+
+    if (!userResults || userResults.length === 0) {
+      return res.status(404).send('Correo no encontrado');
+    }
+
+    const userId = userResults[0].ID_Usuario;
+    const verificationCode = exports.generateVerificationCode();
+
+    const codeResult = await executeQuery('INSERT INTO codigo_de_verificacion (Codigo) VALUES (?)', [verificationCode]);
+    const codigoId = codeResult.insertId;
+
+    await executeQuery('UPDATE usuario SET Codigo_verificacion = ? WHERE ID_Usuario = ?', [codigoId, userId]);
+
+    const transporter = nodemailer.createTransport({
+      service: 'Gmail',
+      auth: {
+        user: 'a20300685@ceti.mx',
+        pass: 'fcxhatvwmyijejus'
       }
-
-      if (results.length === 0) {
-        return res.status(404).send('Correo no encontrado');
-      }
-
-      const userId = results[0].ID_Usuario;
-      const verificationCode = generateVerificationCode();
-
-      const insertCodeQuery = 'INSERT INTO codigo_de_verificacion (Codigo) VALUES (?)';
-      const result = await executeQuery(insertCodeQuery, [verificationCode]);
-      const codigoId = result.insertId;
-
-      const updateUserQuery = 'UPDATE usuario SET Codigo_verificacion = ? WHERE ID_Usuario = ?';
-      await executeQuery(updateUserQuery, [codigoId, userId]);
-
-      const transporter = nodemailer.createTransport({
-        service: 'Gmail',
-        auth: {
-          user: 'a20300685@ceti.mx',
-          pass: 'fcxhatvwmyijejus'
-        }
-      });
-
-      const mailOptions = {
-        from: 'a20300685@ceti.mx',
-        to: correo,
-        subject: 'Código de restablecimiento de contraseña',
-        text: `Tu código de restablecimiento de contraseña es: ${verificationCode}`
-      };
-
-      await transporter.sendMail(mailOptions);
-
-      res.status(200).send('Código de restablecimiento enviado al correo');
     });
-  } catch (err) {
-    console.error('Error en el servidor:', err);
+
+    await transporter.sendMail({
+      from: 'a20300685@ceti.mx',
+      to: correo,
+      subject: 'Código de restablecimiento de contraseña',
+      text: `Tu código de restablecimiento de contraseña es: ${verificationCode}`
+    });
+
+    res.status(200).send('Código de restablecimiento enviado al correo');
+  } catch (error) {
+    console.error('Error en el servidor:', error);
     res.status(500).send('Error en el servidor');
   }
 };
@@ -411,41 +403,34 @@ exports.requestPasswordReset = async (req, res) => {
 // Función para verificar el código de restablecimiento de contraseña
 exports.verifyResetCode = async (req, res) => {
   const { correo, codigo } = req.body;
+  
   if (!correo || !codigo) {
     return res.status(400).send('Por favor, proporciona tu correo y el código de verificación');
   }
 
   try {
-    const userQuery = 'SELECT ID_Usuario, Codigo_verificacion FROM usuario WHERE Correo = ?';
-    executeQuery(userQuery, [correo], (err, userResults) => {
-      if (err) {
-        console.error('Error en la consulta de la base de datos:', err);
-        return res.status(500).send('Error en el servidor');
-      }
+    const userResults = await executeQuery(
+      'SELECT ID_Usuario, Codigo_verificacion FROM usuario WHERE Correo = ?',
+      [correo]
+    );
 
-      if (userResults.length === 0) {
-        return res.status(404).send('Usuario no encontrado');
-      }
+    if (!userResults || userResults.length === 0) {
+      return res.status(404).send('Usuario no encontrado');
+    }
 
-      const userId = userResults[0].ID_Usuario;
-      const codigoId = userResults[0].Codigo_verificacion;
+    const codigoId = userResults[0].Codigo_verificacion;
+    const codeResults = await executeQuery(
+      'SELECT * FROM codigo_de_verificacion WHERE ID_codigo = ? AND Codigo = ?',
+      [codigoId, codigo]
+    );
 
-      const codigoQuery = 'SELECT * FROM codigo_de_verificacion WHERE ID_codigo = ? AND Codigo = ?';
-      executeQuery(codigoQuery, [codigoId, codigo], (err, codeResults) => {
-        if (err) {
-          console.error('Error en la consulta de la base de datos:', err);
-          return res.status(500).send('Error en el servidor');
-        }
+    if (!codeResults || codeResults.length === 0) {
+      return res.status(401).send('Código de verificación incorrecto');
+    }
 
-        if (codeResults.length === 0) {
-          return res.status(401).send('Código de verificación incorrecto');
-        }
-
-        res.status(200).send('Código de verificación correcto');
-      });
-    });
-  } catch (err) {
-    console.error('Error en el servidor:', err);
+    res.status(200).send('Código de verificación correcto');
+  } catch (error) {
+    console.error('Error en el servidor:', error);
     res.status(500).send('Error en el servidor');
   }
 };
@@ -453,55 +438,50 @@ exports.verifyResetCode = async (req, res) => {
 // Función para restablecer la contraseña
 exports.resetPassword = async (req, res) => {
   const { correo, codigo, nuevaContrasena } = req.body;
+  
   if (!correo || !codigo || !nuevaContrasena) {
-    return res.status(400).send('Por favor, proporciona tu correo, el código de verificación y la nueva contraseña');
+    return res.status(400).send('Por favor, proporciona todos los campos requeridos');
   }
 
   try {
-    const userQuery = 'SELECT ID_Usuario, Codigo_verificacion FROM usuario WHERE Correo = ?';
-    executeQuery(userQuery, [correo], (err, userResults) => {
-      if (err) {
-        console.error('Error en la consulta de la base de datos:', err);
-        return res.status(500).send('Error en el servidor');
-      }
+    const userResults = await executeQuery(
+      'SELECT ID_Usuario, Codigo_verificacion FROM usuario WHERE Correo = ?',
+      [correo]
+    );
 
-      if (userResults.length === 0) {
-        return res.status(404).send('Usuario no encontrado');
-      }
+    if (!userResults || userResults.length === 0) {
+      return res.status(404).send('Usuario no encontrado');
+    }
 
-      const userId = userResults[0].ID_Usuario;
-      const codigoId = userResults[0].Codigo_verificacion;
+    const userId = userResults[0].ID_Usuario;
+    const codigoId = userResults[0].Codigo_verificacion;
 
-      const codigoQuery = 'SELECT * FROM codigo_de_verificacion WHERE ID_codigo = ? AND Codigo = ?';
-      executeQuery(codigoQuery, [codigoId, codigo], async (err, codeResults) => {
-        if (err) {
-          console.error('Error en la consulta de la base de datos:', err);
-          return res.status(500).send('Error en el servidor');
-        }
+    const codeResults = await executeQuery(
+      'SELECT * FROM codigo_de_verificacion WHERE ID_codigo = ? AND Codigo = ?',
+      [codigoId, codigo]
+    );
 
-        if (codeResults.length === 0) {
-          return res.status(401).send('Código de verificación incorrecto');
-        }
+    if (!codeResults || codeResults.length === 0) {
+      return res.status(401).send('Código de verificación incorrecto');
+    }
 
-        const updatePasswordQuery = 'UPDATE usuario SET Contrasena = ? WHERE ID_Usuario = ?';
-        await executeQuery(updatePasswordQuery, [nuevaContrasena, userId]);
+    await executeQuery(
+      'UPDATE usuario SET Contrasena = ? WHERE ID_Usuario = ?',
+      [nuevaContrasena, userId]
+    );
 
-        res.status(200).send('Contraseña restablecida exitosamente');
-      });
-    });
-  } catch (err) {
-    console.error('Error en el servidor:', err);
+    res.status(200).send('Contraseña restablecida exitosamente');
+  } catch (error) {
+    console.error('Error en el servidor:', error);
     res.status(500).send('Error en el servidor');
   }
 };
-
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 
 const fs = require('fs');
 const multer = require('multer');
-const pool = require('../db/db'); // Ajusta la ruta según sea necesario
 
 const uploadDir = 'uploads';
 
@@ -509,73 +489,54 @@ if (!fs.existsSync(uploadDir)) {
     fs.mkdirSync(uploadDir);
 }
 
-const storage = multer.memoryStorage(); // Usaremos memoryStorage para manejar los datos como Buffer
-const upload = multer({ storage: storage });
+exports.uploadFiles = async (req, res) => {
+  const storage = multer.memoryStorage();   // Usaremos memoryStorage para manejar los datos como Buffer
 
-exports.uploadFiles = (req, res) => {
-  upload.fields([{ name: 'pdf', maxCount: 1 }, { name: 'photo', maxCount: 1 }])(req, res, async function (err) {
-      if (err) {
-          console.error('Error en Multer:', err);
-          return res.status(400).send('Error al cargar los archivos');
-      }
+  const upload = multer({ storage: storage });
 
-      const { pdf, photo } = req.files;
-      console.log('Archivos recibidos:', req.files);
-      console.log('Datos del formulario:', req.body);
+  try {
+    await new Promise((resolve, reject) => {
+      upload.fields([
+        { name: 'pdf', maxCount: 1 }, 
+        { name: 'photo', maxCount: 1 }
+      ])(req, res, (err) => {
+        if (err) reject(err);
+        else resolve();
+      });
+    });
 
-      if (!pdf || !photo) {
-          return res.status(400).send('Por favor, sube el documento y la foto');
-      }
+    const { pdf, photo } = req.files;
+    
+    if (!pdf || !photo) {
+      return res.status(400).send('Por favor, sube el documento y la foto');
+    }
 
-      try {
-          const pdfBuffer = pdf[0].buffer;
-          const photoBuffer = photo[0].buffer;
+    const maxId = await obtenerUltimoIdContrato();
+    
+    await executeQuery(
+      'UPDATE contratos SET Documentos = ?, Foto_Rostro = ? WHERE ID_Contrato = ?',
+      [pdf[0].buffer, photo[0].buffer, maxId]
+    );
 
-
-          const maxId = await obtenerUltimoIdContrato();
-
-          const query = 'UPDATE contratos SET Documentos = ?, Foto_Rostro = ? WHERE ID_Contrato = ?';
-          executeQuery(query, [pdfBuffer, photoBuffer,maxId], (err, results) => {
-              if (err) {
-                  console.error('Error al guardar en la base de datos:', err);
-                  return res.status(500).send('Error al guardar en la base de datos');
-              }
-
-              res.status(200).send('Archivos subidos y guardados correctamente');
-          });
-      } catch (error) {
-          console.error('Error al procesar la carga de archivos:', error);
-          res.status(500).send('Error al procesar la carga de archivos');
-      }
-  });
+    res.status(200).send('Archivos subidos y guardados correctamente');
+  } catch (error) {
+    console.error('Error al procesar la carga de archivos:', error);
+    res.status(500).send('Error al procesar la carga de archivos');
+  }
 };
-
-
-
 
 exports.getLatestUserType = async (req, res) => {
   try {
+    const results = await executeQuery('SELECT Tipo FROM usuario ORDER BY fecha_creacion DESC LIMIT 1');
     
-    const query = 'SELECT Tipo FROM usuario ORDER BY fecha_creacion DESC LIMIT 1';
+    if (!results || results.length === 0) {
+      return res.status(404).json({ message: 'No se encontró ningún usuario' });
+    }
     
-    // Ejecutar la consulta
-    executeQuery(query, (err, results) => {
-      if (err) {
-        console.error('Error ejecutando la consulta:', err);
-        return res.status(500).send('Error ejecutando la consulta');
-      }
-
-      // Si el resultado existe, devolvemos el tipo
-      if (results.length > 0) {
-        res.json({ tipo: results[0].Tipo });
-        
-      } else {
-        res.status(404).send('No se encontró ningún usuario');
-      }
-    });
-  } catch (err) {
-    console.error('Error en el servidor:', err);
-    res.status(500).send('Error en el servidor');
+    res.json({ tipo: results[0].Tipo });
+  } catch (error) {
+    console.error('Error en el servidor:', error);
+    res.status(500).json({ message: 'Error en el servidor' });
   }
 };
 
@@ -676,19 +637,25 @@ exports.getUsuariosPorTipo = async (req, res) => {
 
 exports.searchUsers = async (req, res) => {
   const { searchTerm } = req.query;
+  
   if (!searchTerm) {
-      return res.status(400).json({ message: 'Falta el parámetro searchTerm' });
+    return res.status(400).json({ message: 'Falta el término de búsqueda' });
   }
+
   try {
-      const usuarios = await Usuario.find({ 
-          $or: [
-              { nombre: { $regex: searchTerm, $options: 'i' } },
-              { apellido: { $regex: searchTerm, $options: 'i' } }
-          ]
-      });
-      res.status(200).json(usuarios);
+    const query = `
+      SELECT u.ID_Usuario, u.Correo, u.Tipo, a.Nombres, a.ApellidoPaterno, a.ApellidoMaterno
+      FROM usuario u
+      JOIN alumnos a ON u.ID_Usuario = a.Usuario_Generado
+      WHERE a.Nombres LIKE ? OR a.ApellidoPaterno LIKE ? OR a.ApellidoMaterno LIKE ?
+    `;
+    const searchPattern = `%${searchTerm}%`;
+    const results = await executeQuery(query, [searchPattern, searchPattern, searchPattern]);
+    
+    res.status(200).json(results);
   } catch (error) {
-      res.status(500).json({ message: 'Error al buscar usuarios' });
+    console.error('Error al buscar usuarios:', error);
+    res.status(500).json({ message: 'Error al buscar usuarios' });
   }
 };
 
@@ -817,29 +784,28 @@ exports.getFinanzasSemestral = async (req, res) => {
 
 // Obtener usuarios por estatus
 exports.getUsuariosPorEstatus = async (req, res) => {
-  const { estatus } = req.params; // Primer Ingreso, Habilitado, Deshabilitado
+  const { estatus } = req.params;
 
   try {
-    // Consulta a la base de datos para obtener los usuarios con el estatus correspondiente
     const result = await executeQuery(
-      `SELECT u.ID_Usuario, u.Correo, u.Tipo, u.fecha_creacion, a.Nombres, a.ApellidoPaterno, a.ApellidoMaterno
-      FROM usuario u
-      JOIN alumnos a ON u.ID_Usuario = a.Usuario_Generado
-      WHERE u.Estatus = ?`, [estatus]);
+      `SELECT u.ID_Usuario, u.Correo, u.Tipo, u.fecha_creacion, 
+              a.Nombres, a.ApellidoPaterno, a.ApellidoMaterno
+       FROM usuario u
+       JOIN alumnos a ON u.ID_Usuario = a.Usuario_Generado
+       WHERE u.Estatus = ?`,
+      [estatus]
+    );
 
-    // Verifica si se encontraron usuarios
-    if (result.length === 0) {
+    if (!result || result.length === 0) {
       return res.status(404).json({ error: 'No se encontraron usuarios para este estatus' });
     }
 
-    // Retorna los usuarios obtenidos
     res.status(200).json(result);
   } catch (error) {
     console.error('Error al obtener los usuarios por estatus:', error);
     res.status(500).json({ error: 'Error al obtener los usuarios' });
   }
 };
-
 
 // Habilitar usuario
 exports.habilitarUsuario = async (req, res) => {
@@ -875,6 +841,11 @@ exports.deshabilitarUsuario = async (req, res) => {
 exports.obtenerGeneraciones = async (req, res) => {
   try {
     const result = await executeQuery('SELECT DISTINCT Nombre_Gen FROM manejados ORDER BY ID_Generacion');
+    
+    if (!result || result.length === 0) {
+      return res.status(404).json({ message: 'No se encontraron generaciones' });
+    }
+    
     res.status(200).json(result);
   } catch (error) {
     console.error('Error al obtener generaciones:', error);
@@ -886,33 +857,66 @@ exports.obtenerGeneraciones = async (req, res) => {
 exports.crearGeneracion = async (req, res) => {
   const { Nombre_Gen, Administrador, alumnos } = req.body;
 
-  // Validar que el número de alumnos esté entre 8 y 32
-  if (alumnos.length < 8 || alumnos.length > 32) {
-    return res.status(400).json({ message: 'La generación debe tener entre 8 y 32 alumnos.' });
+  // Validar datos de entrada
+  if (!Nombre_Gen || !Administrador || !alumnos) {
+    return res.status(400).json({ 
+      message: 'Faltan datos requeridos (Nombre_Gen, Administrador, alumnos)' 
+    });
   }
 
-  // Construye los valores a insertar
-  const valores = alumnos
-    .map(idAlumno => `('${Nombre_Gen}', ${Administrador}, ${idAlumno})`)
-    .join(', ');
-
-  const sql = `
-    INSERT INTO manejados (Nombre_Gen, Administrador, ID_Alumno)
-    VALUES ${valores};
-  `;
+  // Validar que el número de alumnos esté entre 8 y 32
+  if (alumnos.length < 8 || alumnos.length > 32) {
+    return res.status(400).json({ 
+      message: 'La generación debe tener entre 8 y 32 alumnos.' 
+    });
+  }
 
   try {
-    await executeQuery(sql);
-    res.status(200).json({ message: 'Generación creada exitosamente' });
+    // Iniciar transacción
+    await executeQuery('START TRANSACTION');
+
+    // Insertar cada alumno en la generación
+    for (const idAlumno of alumnos) {
+      await executeQuery(
+        'INSERT INTO manejados (Nombre_Gen, Administrador, ID_Alumno) VALUES (?, ?, ?)',
+        [Nombre_Gen, Administrador, idAlumno]
+      );
+    }
+
+    // Confirmar transacción
+    await executeQuery('COMMIT');
+
+    res.status(200).json({ 
+      success: true,
+      message: 'Generación creada exitosamente' 
+    });
   } catch (error) {
+    // Revertir transacción en caso de error
+    await executeQuery('ROLLBACK');
     console.error("Error al crear generación:", error);
-    res.status(500).json({ message: 'Error al crear la generación' });
+    res.status(500).json({ 
+      success: false,
+      message: 'Error al crear la generación',
+      error: error.message 
+    });
   }
 };
 
 
 // Función para obtener el nombre de la última generación en orden alfabético
 exports.obtenerUltimaGeneracion = async () => {
+  try {
+    const result = await executeQuery(
+      'SELECT Nombre_Gen FROM manejados ORDER BY ID_Generacion DESC LIMIT 1'
+    );
+    return result[0]?.Nombre_Gen || null;
+  } catch (error) {
+    console.error('Error al obtener la última generación:', error);
+    throw error;
+  }
+};
+
+const obtenerUltimaGeneracion = async () => {
   try {
     const result = await executeQuery('SELECT Nombre_Gen FROM manejados ORDER BY ID_Generacion DESC LIMIT 1');
     return result[0]?.Nombre_Gen || null;  // Devuelve el nombre de la última generación o null si no existe
@@ -923,30 +927,35 @@ exports.obtenerUltimaGeneracion = async () => {
 };
 
 // Función para validar la nueva generación en orden alfabético
-exports.validarNuevaGeneracion = async () => {
+exports.validarNuevaGeneracion = async (req, res) => {
   try {
     const ultimaGeneracion = await obtenerUltimaGeneracion();
     
-    if (!ultimaGeneracion) return 'A';  // Si no hay generación previa, empieza con "A"
+    if (!ultimaGeneracion) {
+      return res.status(200).json({ siguienteGeneracion: 'A' });  // Si no hay generación previa, empieza con "A"
+    }
     
     const siguienteGeneracion = String.fromCharCode(ultimaGeneracion.charCodeAt(0) + 1);
     
-    // Si llegamos a "Z", reiniciamos en "A"
+    // Si llegamos a 'Z', reiniciamos en 'A'
     if (siguienteGeneracion > 'Z') {
-      return 'A';
+      return res.status(200).json({ siguienteGeneracion: 'A' });
     } else {
-      return siguienteGeneracion;
+      return res.status(200).json({ siguienteGeneracion: siguienteGeneracion });
     }
   } catch (error) {
     console.error('Error en la validación de la nueva generación:', error);
-    throw error;
+    return res.status(500).json({ 
+      error: 'Error al validar la nueva generación',
+      message: error.message 
+    });
   }
 };
 
 
 exports.obtenerAlumnosPrimerIngresoSinGeneracion = async (req, res) => {
   try {
-    const result = await executeQuery(`
+    const query = `
       SELECT 
         alumnos.ID_Alumno, 
         alumnos.Nombres, 
@@ -955,17 +964,23 @@ exports.obtenerAlumnosPrimerIngresoSinGeneracion = async (req, res) => {
         usuario.Tipo, 
         usuario.estatus, 
         alumnos.ID_Generacion 
-      FROM 
-        alumnos 
-      JOIN 
-        usuario ON alumnos.Usuario_Generado = usuario.ID_Usuario 
-      WHERE 
-        usuario.estatus = 'Primer Ingreso' 
-        AND alumnos.ID_Generacion IS NULL
-    `);
-    res.status(200).json(result);
+      FROM alumnos 
+      JOIN usuario ON alumnos.Usuario_Generado = usuario.ID_Usuario 
+      WHERE usuario.estatus = 'Primer Ingreso' 
+      AND alumnos.ID_Generacion IS NULL
+    `;
+    
+    const results = await executeQuery(query);
+    
+    if (!results || results.length === 0) {
+      return res.status(404).json({ message: 'No se encontraron alumnos de primer ingreso sin generación' });
+    }
+    
+    res.status(200).json(results);
   } catch (error) {
     console.error('Error al obtener alumnos de primer ingreso sin generación:', error);
-    res.status(500).json({ error: 'Error al obtener alumnos de primer ingreso sin generación' });
+    res.status(500).json({ message: 'Error al obtener alumnos' });
   }
 };
+
+exports.obtenerUltimaGeneracion = obtenerUltimaGeneracion;

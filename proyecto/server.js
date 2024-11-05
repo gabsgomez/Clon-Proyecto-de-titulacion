@@ -8,7 +8,7 @@ const formRoutes = require("./routes/formulario")
 const authController = require('./controllers/authController');
 const app = express();
 const server = require('http').createServer(app);
-
+const {executeQuery} = require('./db/db.js');
 
 
 //const mysql = require('mysql2/promise');
@@ -25,7 +25,15 @@ const server = require('http').createServer(app);
 
 
 // Middleware
-app.use(cors());
+app.use(cors(
+    {
+        origin: true,
+        credentials: true,
+        methods: 'GET, POST, PUT, DELETE, OPTIONS',
+        allowedHeaders: 'Content-Type, Authorization, X-Requested-With',
+        PORT: 5000
+    }    
+));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -99,7 +107,7 @@ app.post('/paypal-webhook', async (req, res) => {
                 `;
 
                 // Ejecutar la consulta para obtener el ID del alumno
-                connection.query(searchSql, [emailAlumno], (error, results) => {
+                executeQuery(searchSql, [emailAlumno], (error, results) => {
                     if (error) {
                         console.error('Error al buscar el alumno en la base de datos:', error);
                         return res.status(500).send('Error al buscar el alumno en la base de datos');
@@ -115,7 +123,7 @@ app.post('/paypal-webhook', async (req, res) => {
                             INSERT INTO Caja (Metodo_Pago, Monto, Fecha_De_Pago, Estado_Pago, Alumno) 
                             VALUES (?, ?, ?, ?, ?)
                         `;
-                        connection.query(sql, [metodoPago, monto, fechaDePago, estadoPago, alumnoId], (error, results) => {
+                        executeQuery(sql, [metodoPago, monto, fechaDePago, estadoPago, alumnoId], (error, results) => {
                             if (error) {
                                 console.error('Error al insertar el pago en la base de datos:', error);
                                 return res.status(500).send('Error al registrar el pago en la base de datos');
