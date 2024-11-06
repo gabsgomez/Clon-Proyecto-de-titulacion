@@ -32,6 +32,8 @@ import PayPal from './components/PayPal';
 import CajaInicio from './components/CajaInicio';
 import VideoconferenciasFinancieras from './components/VideoconferenciasFinancieras';
 import DocumentosDeIdentidad from './components/DocumentosDeIdentidad';
+import NavbarF from './components/NavBarF';
+import CajaF from './components/CajaF';
 
 
 
@@ -40,12 +42,14 @@ function MainContent() {
 
   const showNavbar = ["/", "/nosotros", "/experiencia", "/cursos", "/register", "/login"];
   const showNavbar2 = ["/classroom", "/AulaInteractiva", "/Noticias", "/IndicadoresDeStock", "/Caja", "/ChatBot", "/Videoconferencias", "/acciones", "/fondos", "/futuros", "/indices", "/bonos", "/economias"];
-  const showFooter = ["/", "/nosotros", "/experiencia", "/cursos", "/register", "/login", "/classroom", "/AulaInteractiva", "/Noticias", "/IndicadoresDeStock", "/Caja", "/ChatBot", "/Videoconferencias", "/acciones", "/fondos", "/futuros", "/indices", "/bonos", "/economias"];
+  const showNavbarF = ["/VideoconferenciasFinancieras","/CajaF"];
+  const showFooter = ["/", "/nosotros", "/experiencia", "/cursos", "/register", "/login", "/classroom", "/AulaInteractiva", "/Noticias", "/IndicadoresDeStock", "/Caja", "/ChatBot", "/Videoconferencias", "/acciones", "/fondos", "/futuros", "/indices", "/bonos", "/economias","/VideoconferenciasFinancieras"];
 
   return (
     <>
       {showNavbar.includes(location.pathname) && <Navbar />}
       {showNavbar2.includes(location.pathname) && <Navbar2 />}
+      {showNavbarF.includes(location.pathname)&& <NavbarF/>}
       
       <div className="content">
         <Routes>
@@ -68,7 +72,7 @@ function MainContent() {
           <Route path="/bonos" element={<Bonos />} />
           <Route path="/economias" element={<Economias />} />
           
-          {/* Ruta para la página de videoconferencias */}
+          
           <Route path="/Videoconferencias" element={<Videoconferencias />} />
           <Route path='/room/:roomID' element={<Room/>}/>
 
@@ -76,6 +80,7 @@ function MainContent() {
           <Route path="/PayPal" element={<PayPal/>}/>
 
           <Route path="/CajaInicio" element={<CajaInicio/>}/>
+          <Route path="/CajaF" element={<CajaF/>}/>
 
           
 <Route path="/VideoconferenciasFinancieras" element={<VideoconferenciasFinancieras />} />
@@ -102,3 +107,23 @@ function App() {
 }
 
 export default App;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

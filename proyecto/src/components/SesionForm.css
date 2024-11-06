@@ -11,6 +11,13 @@
     text-align: center;
 }
 
+.error-message {
+    color: red;
+    font-weight: bold;
+    margin-top: 10px;
+  }
+  
+
 /* Estilo general para el contenedor del formulario */
 .form-containerr {
     display: flex;

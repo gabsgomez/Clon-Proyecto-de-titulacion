@@ -177,16 +177,6 @@ export default RegisterForm;
 
 
 
-
-
-
-
-
-
-
-
-
-
 import React, { useState } from 'react';
 import './RegisterForm.css';
 import { useNavigate } from 'react-router-dom';

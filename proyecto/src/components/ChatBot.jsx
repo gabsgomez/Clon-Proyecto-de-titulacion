@@ -125,7 +125,7 @@ const Chatbot = () => {
               userMessage,
               {
                 sender: "Chatbot",
-                text: "<br/>Terminología Financiera<br/>1.- ¿Qué es una acción?<br/>2.- ¿Qué es un bono?<br/>3.- ¿Qué es un dividendo?<br/>4.- ¿Qué es un ETF?<br/>5.- ¿Qué es un índice bursátil?<br/>6.- ¿Qué es una acción preferente?<br/>7.- ¿Qué es una acción ordinaria?<br/>8.- ¿Qué es un rendimiento?<br/>9.- ¿Qué es un mercado alcista?<br/>10.- ¿Qué es un mercado bajista?",
+                text: "<br/>Terminología Financiera<br/>0.- Regresar al menú principal.<br/>1.- ¿Qué es una acción?<br/>2.- ¿Qué es un bono?<br/>3.- ¿Qué es un dividendo?<br/>4.- ¿Qué es un ETF?<br/>5.- ¿Qué es un índice bursátil?<br/>6.- ¿Qué es una acción preferente?<br/>7.- ¿Qué es una acción ordinaria?<br/>8.- ¿Qué es un rendimiento?<br/>9.- ¿Qué es un mercado alcista?<br/>10.- ¿Qué es un mercado bajista?",
               },
             ]);
             setSubQuestions("terminologia_financiera");
@@ -136,7 +136,7 @@ const Chatbot = () => {
                 userMessage,
                 {
                   sender: "Chatbot",
-                  text: "<br/>Instrumentos Financieros<br/>1.- ¿Qué es un futuro?<br/>2.- ¿Qué es una opción de compra (call)?<br/>3.- ¿Qué es una opción de venta (put)?<br/>4.- ¿Qué es un contrato de futuros?<br/>5.- ¿Qué es un swap?<br/>6.- ¿Qué es una acción blue-chip?<br/>7.- ¿Qué es un bono corporativo?<br/>8.- ¿Qué es un bono del gobierno?<br/>9.- ¿Qué son los valores respaldados por hipotecas (MBS)?<br/>10.- ¿Qué es un fondo de cobertura (hedge fund)?",
+                  text: "<br/>Instrumentos Financieros<br/>0.- Regresar al menú principal.<br/>1.- ¿Qué es un futuro?<br/>2.- ¿Qué es una opción de compra (call)?<br/>3.- ¿Qué es una opción de venta (put)?<br/>4.- ¿Qué es un contrato de futuros?<br/>5.- ¿Qué es un swap?<br/>6.- ¿Qué es una acción blue-chip?<br/>7.- ¿Qué es un bono corporativo?<br/>8.- ¿Qué es un bono del gobierno?<br/>9.- ¿Qué son los valores respaldados por hipotecas (MBS)?<br/>10.- ¿Qué es un fondo de cobertura (hedge fund)?",
                 },
               ]);
               setSubQuestions("instrumentos_financieros");
@@ -147,7 +147,7 @@ const Chatbot = () => {
                   userMessage,
                   {
                     sender: "Chatbot",
-                    text: "<br/>Principios de Inversión<br/>1.- ¿Qué es la rentabilidad?<br/> 2.- ¿Qué es la diversificación?<br/>3.- ¿Qué es el riesgo de inversión?<br/> 4.- ¿Qué es el horizonte temporal?<br/>5.- ¿Qué es la teoría de la cartera?<br/>6.- ¿Qué es el rendimiento ajustado al riesgo?<br/>7.- ¿Qué es una inversión a largo plazo?<br/>8.- ¿Qué es una inversión a corto plazo?<br/>9.- ¿Qué es el análisis técnico?<br/>10.- ¿Qué es el análisis fundamental?",
+                    text: "<br/>Principios de Inversión<br/>0.- Regresar al menú principal.<br/>1.- ¿Qué es la rentabilidad?<br/> 2.- ¿Qué es la diversificación?<br/>3.- ¿Qué es el riesgo de inversión?<br/> 4.- ¿Qué es el horizonte temporal?<br/>5.- ¿Qué es la teoría de la cartera?<br/>6.- ¿Qué es el rendimiento ajustado al riesgo?<br/>7.- ¿Qué es una inversión a largo plazo?<br/>8.- ¿Qué es una inversión a corto plazo?<br/>9.- ¿Qué es el análisis técnico?<br/>10.- ¿Qué es el análisis fundamental?",
                   },
                 ]);
                 setSubQuestions("principios_de_inversion");
@@ -162,7 +162,7 @@ const Chatbot = () => {
               userMessage,
               {
                 sender: "Chatbot",
-                text: "<br/>Análisis Técnico<br/>1.- ¿Qué es un gráfico de velas?<br/>2.- ¿Qué es una media móvil?<br/>3.- ¿Qué es el RSI (Relative Strength Index)?<br/>4.- ¿Qué es el MACD (Moving Average Convergence Divergence)?<br/>5.- ¿Qué son los patrones de precios?<br/>6.- ¿Qué es una línea de tendencia?<br/>7.- ¿Qué es una resistencia en análisis técnico?<br/>8.- ¿Qué es un soporte en análisis técnico?<br/>9.- ¿Qué es el volumen de negociación?<br/>10.- ¿Qué es el estocástico?",
+                text: "<br/>Análisis Técnico<br/>0.- Regresar al menú principal.<br/>1.- ¿Qué es un gráfico de velas?<br/>2.- ¿Qué es una media móvil?<br/>3.- ¿Qué es el RSI (Relative Strength Index)?<br/>4.- ¿Qué es el MACD (Moving Average Convergence Divergence)?<br/>5.- ¿Qué son los patrones de precios?<br/>6.- ¿Qué es una línea de tendencia?<br/>7.- ¿Qué es una resistencia en análisis técnico?<br/>8.- ¿Qué es un soporte en análisis técnico?<br/>9.- ¿Qué es el volumen de negociación?<br/>10.- ¿Qué es el estocástico?",
               },
             ]);
             setSubQuestions("analisis_tecnico");
@@ -173,7 +173,7 @@ const Chatbot = () => {
                 userMessage,
                 {
                   sender: "Chatbot",
-                  text: "<br/>Análisis Fundamental<br/>1.- ¿Qué es un estado de resultados?<br/>2.- ¿Qué es un balance general?<br/>3.- ¿Qué es el flujo de efectivo?<br/>4.- ¿Qué son los ratios financieros?<br/>5.- ¿Qué es la capitalización bursátil?<br/>6.- ¿Qué es el P/E ratio (Price-to-Earnings Ratio)?<br/>7.- ¿Qué es el EBITDA?<br/>8.- ¿Qué es el ROE (Return on Equity)?<br/>9.- ¿Qué es el ROA (Return on Assets)?<br/>10.- ¿Qué es el margen de beneficio?",
+                  text: "<br/>Análisis Fundamental<br/>0.- Regresar al menú principal.<br/>1.- ¿Qué es un estado de resultados?<br/>2.- ¿Qué es un balance general?<br/>3.- ¿Qué es el flujo de efectivo?<br/>4.- ¿Qué son los ratios financieros?<br/>5.- ¿Qué es la capitalización bursátil?<br/>6.- ¿Qué es el P/E ratio (Price-to-Earnings Ratio)?<br/>7.- ¿Qué es el EBITDA?<br/>8.- ¿Qué es el ROE (Return on Equity)?<br/>9.- ¿Qué es el ROA (Return on Assets)?<br/>10.- ¿Qué es el margen de beneficio?",
                 },
               ]);
               setSubQuestions("analisis_fundamental");
@@ -184,7 +184,7 @@ const Chatbot = () => {
                   userMessage,
                   {
                     sender: "Chatbot",
-                    text: "<br/>Estrategias de Trading<br/>1.- ¿Qué es el day trading?<br/> 2.- ¿Qué es el swing trading?<br/>3.- ¿Qué es el trading de tendencias?<br/> 4.- ¿Qué es el trading basado en noticias?<br/>5.- ¿Qué es un stop-loss?<br/>6.- ¿Qué es un take-profit?<br/>7.- ¿Qué es el scalping?<br/>8.- ¿Qué es una estrategia de ruptura (breakout)?<br/>9.- ¿Qué es un análisis de volatilidad?<br/>10.- ¿Qué es una operación apalancada?",
+                    text: "<br/>Estrategias de Trading<br/>0.- Regresar al menú principal.<br/>1.- ¿Qué es el day trading?<br/> 2.- ¿Qué es el swing trading?<br/>3.- ¿Qué es el trading de tendencias?<br/> 4.- ¿Qué es el trading basado en noticias?<br/>5.- ¿Qué es un stop-loss?<br/>6.- ¿Qué es un take-profit?<br/>7.- ¿Qué es el scalping?<br/>8.- ¿Qué es una estrategia de ruptura (breakout)?<br/>9.- ¿Qué es un análisis de volatilidad?<br/>10.- ¿Qué es una operación apalancada?",
                   },
                 ]);
                 setSubQuestions("estrategias_de_trading");
@@ -200,7 +200,7 @@ const Chatbot = () => {
               userMessage,
               {
                 sender: "Chatbot",
-                text: "<br/>Política monetaria<br/>1.- ¿Qué es la política monetaria?<br/>2.- ¿Cuál es el objetivo principal de la política monetaria?<br/>3.- ¿Qué herramientas utiliza el banco central en la política monetaria?<br/>4.- ¿Cómo afecta la política monetaria a la economía?<br/>5.- ¿Qué es una política monetaria expansiva?<br/>6.- ¿Qué es una política monetaria restrictiva?<br/>7.- ¿Cómo se relaciona la política monetaria con la inflación?<br/>8.- ¿Qué es la tasa de interés de referencia?<br/>9.- ¿Cómo afecta la política monetaria a los tipos de cambio?<br/>10.- ¿Qué es la curva de Phillips?",
+                text: "<br/>Política monetaria<br/>0.- Regresar al menú principal.<br/>1.- ¿Qué es la política monetaria?<br/>2.- ¿Cuál es el objetivo principal de la política monetaria?<br/>3.- ¿Qué herramientas utiliza el banco central en la política monetaria?<br/>4.- ¿Cómo afecta la política monetaria a la economía?<br/>5.- ¿Qué es una política monetaria expansiva?<br/>6.- ¿Qué es una política monetaria restrictiva?<br/>7.- ¿Cómo se relaciona la política monetaria con la inflación?<br/>8.- ¿Qué es la tasa de interés de referencia?<br/>9.- ¿Cómo afecta la política monetaria a los tipos de cambio?<br/>10.- ¿Qué es la curva de Phillips?",
               },
             ]);
             setSubQuestions("politica_monetaria");
@@ -211,7 +211,7 @@ const Chatbot = () => {
                 userMessage,
                 {
                   sender: "Chatbot",
-                  text: "<br/>Desarrollo económico<br/>1.- ¿Qué es el desarrollo económico?<br/>2.- ¿Qué indicadores se utilizan para medir el desarrollo económico?<br/>3.- ¿Cuál es la diferencia entre crecimiento económico y desarrollo económico?<br/>4.- ¿Qué papel juega la educación en el desarrollo económico?<br/>5.- ¿Cómo afecta la infraestructura al desarrollo económico?<br/>6.- ¿Qué es el capital humano?<br/>7.- ¿Qué es la sostenibilidad en el desarrollo económico?<br/>8.- ¿Cómo influye la política fiscal en el desarrollo económico?<br/>9.- ¿Qué es la desigualdad económica?<br/>10.- ¿Qué es el desarrollo inclusivo?",
+                  text: "<br/>Desarrollo económico<br/>0.- Regresar al menú principal.<br/>1.- ¿Qué es el desarrollo económico?<br/>2.- ¿Qué indicadores se utilizan para medir el desarrollo económico?<br/>3.- ¿Cuál es la diferencia entre crecimiento económico y desarrollo económico?<br/>4.- ¿Qué papel juega la educación en el desarrollo económico?<br/>5.- ¿Cómo afecta la infraestructura al desarrollo económico?<br/>6.- ¿Qué es el capital humano?<br/>7.- ¿Qué es la sostenibilidad en el desarrollo económico?<br/>8.- ¿Cómo influye la política fiscal en el desarrollo económico?<br/>9.- ¿Qué es la desigualdad económica?<br/>10.- ¿Qué es el desarrollo inclusivo?",
                 },
               ]);
               setSubQuestions("desarrollo_economico");
@@ -222,7 +222,7 @@ const Chatbot = () => {
                   userMessage,
                   {
                     sender: "Chatbot",
-                    text: "<br/>Comercio Internacional<br/>1.- ¿Qué es el comercio internacional?<br/> 2.- ¿Cuál es la diferencia entre exportación e importación?<br/>3.- ¿Qué es un arancel?<br/>4.- ¿Qué es la balanza comercial?<br/>5.- ¿Qué es el proteccionismo?<br/>6.- ¿Qué es el libre comercio?<br/>7.- ¿Qué es un acuerdo de libre comercio (TLC)?<br/>8.- ¿Qué es la globalización?<br/>9.- ¿Cómo afectan las tasas de cambio al comercio internacional?<br/>10.- ¿Qué es el dumping?",
+                    text: "<br/>Comercio Internacional<br/>0.- Regresar al menú principal.<br/>1.- ¿Qué es el comercio internacional?<br/> 2.- ¿Cuál es la diferencia entre exportación e importación?<br/>3.- ¿Qué es un arancel?<br/>4.- ¿Qué es la balanza comercial?<br/>5.- ¿Qué es el proteccionismo?<br/>6.- ¿Qué es el libre comercio?<br/>7.- ¿Qué es un acuerdo de libre comercio (TLC)?<br/>8.- ¿Qué es la globalización?<br/>9.- ¿Cómo afectan las tasas de cambio al comercio internacional?<br/>10.- ¿Qué es el dumping?",
                   },
                 ]);
                 setSubQuestions("comercio_internacional");
@@ -238,7 +238,7 @@ const Chatbot = () => {
               userMessage,
               {
                 sender: "Chatbot",
-                text: "<br/>Presupuesto y Ahorro<br/>1.- ¿Qué es un presupuesto?<br/>2.- ¿Cómo hacer un presupuesto personal?<br/>3.- ¿Qué es un fondo de emergencia?<br/>4.- ¿Cuánto debería ahorrar de mis ingresos?<br/>5.- ¿Qué es el ahorro automático?<br/>6.- ¿Qué es una meta de ahorro?<br/>7.- ¿Qué es una cuenta de ahorros?<br/>8.- ¿Cómo reducir gastos en el presupuesto?<br/>9.- ¿Qué es un gasto fijo?<br/>10.- ¿Qué es un gasto variable?",
+                text: "<br/>Presupuesto y Ahorro<br/>0.- Regresar al menú principal.<br/>1.- ¿Qué es un presupuesto?<br/>2.- ¿Cómo hacer un presupuesto personal?<br/>3.- ¿Qué es un fondo de emergencia?<br/>4.- ¿Cuánto debería ahorrar de mis ingresos?<br/>5.- ¿Qué es el ahorro automático?<br/>6.- ¿Qué es una meta de ahorro?<br/>7.- ¿Qué es una cuenta de ahorros?<br/>8.- ¿Cómo reducir gastos en el presupuesto?<br/>9.- ¿Qué es un gasto fijo?<br/>10.- ¿Qué es un gasto variable?",
               },
             ]);
             setSubQuestions("presupuesto_y_ahorro");
@@ -249,7 +249,7 @@ const Chatbot = () => {
                 userMessage,
                 {
                   sender: "Chatbot",
-                  text: "<br/>Planificación Financiera<br/>1.- ¿Qué es la planificación financiera?<br/>2.- ¿Qué es una meta financiera?<br/>3.- ¿Cómo crear un plan de jubilación?<br/>4.- ¿Qué es un plan de inversiones?<br/>5.- ¿Qué es un seguro de vida?<br/>6.- ¿Qué es un seguro de salud?<br/>7.- ¿Qué es un plan de ahorro para la educación?<br/>8.- ¿Cómo establecer un fondo para la jubilación?<br/>9.- ¿Qué es un testamento?<br/>10.- ¿Qué es la planificación patrimonial?",
+                  text: "<br/>Planificación Financiera<br/>0.- Regresar al menú principal.<br/>1.- ¿Qué es la planificación financiera?<br/>2.- ¿Qué es una meta financiera?<br/>3.- ¿Cómo crear un plan de jubilación?<br/>4.- ¿Qué es un plan de inversiones?<br/>5.- ¿Qué es un seguro de vida?<br/>6.- ¿Qué es un seguro de salud?<br/>7.- ¿Qué es un plan de ahorro para la educación?<br/>8.- ¿Cómo establecer un fondo para la jubilación?<br/>9.- ¿Qué es un testamento?<br/>10.- ¿Qué es la planificación patrimonial?",
                 },
               ]);
               setSubQuestions("planificacion_financiera");
@@ -260,7 +260,7 @@ const Chatbot = () => {
                   userMessage,
                   {
                     sender: "Chatbot",
-                    text: "<br/>Deuda y Crédito<br/>1.- ¿Qué es una tarjeta de crédito?<br/> 2.- ¿Qué es una tasa de interés?<br/>3.- ¿Qué es el crédito disponible?<br/> 4.- ¿Cómo afecta el puntaje de crédito a los préstamos?<br/>5.- ¿Qué es una deuda consolidada?<br/>6.- ¿Qué es un préstamo personal?<br/>7.- ¿Qué es un préstamo con garantía?<br/>8.- ¿Qué es un préstamo sin garantía?<br/>9.- ¿Qué es el interés compuesto?<br/>10.- ¿Cómo manejar una deuda?",
+                    text: "<br/>Deuda y Crédito<br/>0.- Regresar al menú principal.<br/>1.- ¿Qué es una tarjeta de crédito?<br/> 2.- ¿Qué es una tasa de interés?<br/>3.- ¿Qué es el crédito disponible?<br/> 4.- ¿Cómo afecta el puntaje de crédito a los préstamos?<br/>5.- ¿Qué es una deuda consolidada?<br/>6.- ¿Qué es un préstamo personal?<br/>7.- ¿Qué es un préstamo con garantía?<br/>8.- ¿Qué es un préstamo sin garantía?<br/>9.- ¿Qué es el interés compuesto?<br/>10.- ¿Cómo manejar una deuda?",
                   },
                 ]);
                 setSubQuestions("deudas_y_credito");
@@ -276,7 +276,7 @@ const Chatbot = () => {
               userMessage,
               {
                 sender: "Chatbot",
-                text: "<br/>Plataformas de Trading<br/>1.- ¿Qué es una plataforma de trading?<br/>2.- ¿Cuáles son algunas de las plataformas de trading más populares?<br/>3.- ¿Qué características debe tener una buena plataforma de trading?<br/>4.- ¿Qué es el apalancamiento en una plataforma de trading?<br/>5.- ¿Cómo afecta la latencia a una plataforma de trading?<br/>6.- ¿Qué es una cuenta demo en una plataforma de trading?<br/>7.- ¿Qué es un stop-loss en una plataforma de trading?<br/>8.- ¿Qué es el trading algorítmico?<br/>9.- ¿Qué tipos de órdenes se pueden ejecutar en una plataforma de trading?<br/>10.- ¿Qué es una API en el contexto de plataformas de trading?",
+                text: "<br/>Plataformas de Trading<br/>0.- Regresar al menú principal.<br/>1.- ¿Qué es una plataforma de trading?<br/>2.- ¿Cuáles son algunas de las plataformas de trading más populares?<br/>3.- ¿Qué características debe tener una buena plataforma de trading?<br/>4.- ¿Qué es el apalancamiento en una plataforma de trading?<br/>5.- ¿Cómo afecta la latencia a una plataforma de trading?<br/>6.- ¿Qué es una cuenta demo en una plataforma de trading?<br/>7.- ¿Qué es un stop-loss en una plataforma de trading?<br/>8.- ¿Qué es el trading algorítmico?<br/>9.- ¿Qué tipos de órdenes se pueden ejecutar en una plataforma de trading?<br/>10.- ¿Qué es una API en el contexto de plataformas de trading?",
               },
             ]);
             setSubQuestions("Plataformas_de_Trading");
@@ -287,7 +287,7 @@ const Chatbot = () => {
                 userMessage,
                 {
                   sender: "Chatbot",
-                  text: "<br/>Plataformas de Crowdfunding<br/>1.- ¿Qué es una plataforma de crowdfunding?<br/>2.- ¿Cuáles son las principales plataformas de crowdfunding?<br/>3.- ¿Qué tipos de crowdfunding existen?<br/>4.- ¿Qué es el crowdfunding de capital?<br/>5.- ¿Cómo funciona el crowdfunding de recompensas?<br/>6.- ¿Qué es el crowdfunding de donaciones?<br/>7.- ¿Cómo afecta el riesgo a los inversores en plataformas de crowdfunding?<br/>8.- ¿Qué es una campaña de crowdfunding?<br/>9.- ¿Cómo puede una empresa promover su campaña de crowdfunding?<br/>10.- ¿Qué factores contribuyen al éxito de una campaña de crowdfunding?",
+                  text: "<br/>Plataformas de Crowdfunding<br/>0.- Regresar al menú principal.<br/>1.- ¿Qué es una plataforma de crowdfunding?<br/>2.- ¿Cuáles son las principales plataformas de crowdfunding?<br/>3.- ¿Qué tipos de crowdfunding existen?<br/>4.- ¿Qué es el crowdfunding de capital?<br/>5.- ¿Cómo funciona el crowdfunding de recompensas?<br/>6.- ¿Qué es el crowdfunding de donaciones?<br/>7.- ¿Cómo afecta el riesgo a los inversores en plataformas de crowdfunding?<br/>8.- ¿Qué es una campaña de crowdfunding?<br/>9.- ¿Cómo puede una empresa promover su campaña de crowdfunding?<br/>10.- ¿Qué factores contribuyen al éxito de una campaña de crowdfunding?",
                 },
               ]);
               setSubQuestions("Plataformas_de_Crowdfunding");
@@ -302,7 +302,7 @@ const Chatbot = () => {
               userMessage,
               {
                 sender: "Chatbot",
-                text: "<br/>Inversiones y Asesoramiento<br/>1.- ¿Qué es una asesoría financiera en inversiones?<br/>2.- ¿Cuál es la diferencia entre un asesor financiero y un corredor de bolsa?<br/>3.- ¿Qué es el perfil de riesgo en inversiones?<br/>4.- ¿Qué es la estrategia de inversión pasiva?<br/>5.- ¿Qué es la diversificación en inversiones?<br/>6.- ¿Qué tipos de activos se pueden incluir en una cartera de inversiones?<br/>7.- ¿Cómo afectan los impuestos a las inversiones?<br/>8.- ¿Qué es el reequilibrio de una cartera de inversiones?<br/>9.- ¿Qué son las comisiones de asesoría financiera?<br/>10.- ¿Qué es la planificación fiscal en el contexto de inversiones?",
+                text: "<br/>Inversiones y Asesoramiento<br/>0.- Regresar al menú principal.<br/>1.- ¿Qué es una asesoría financiera en inversiones?<br/>2.- ¿Cuál es la diferencia entre un asesor financiero y un corredor de bolsa?<br/>3.- ¿Qué es el perfil de riesgo en inversiones?<br/>4.- ¿Qué es la estrategia de inversión pasiva?<br/>5.- ¿Qué es la diversificación en inversiones?<br/>6.- ¿Qué tipos de activos se pueden incluir en una cartera de inversiones?<br/>7.- ¿Cómo afectan los impuestos a las inversiones?<br/>8.- ¿Qué es el reequilibrio de una cartera de inversiones?<br/>9.- ¿Qué son las comisiones de asesoría financiera?<br/>10.- ¿Qué es la planificación fiscal en el contexto de inversiones?",
               },
             ]);
             setSubQuestions("Inversiones_y_Asesoramiento");
@@ -313,7 +313,7 @@ const Chatbot = () => {
                 userMessage,
                 {
                   sender: "Chatbot",
-                  text: "<br/>Asesoría Financiera para Empresas<br/>1.- ¿Qué es la asesoría financiera para empresas?<br/>2.- ¿Qué áreas cubre la asesoría financiera para empresas?<br/>3.- ¿Por qué es importante la asesoría financiera para pequeñas empresas?<br/>4.- ¿Qué es la evaluación financiera de una empresa?<br/>5.- ¿Qué es el apalancamiento financiero en una empresa?<br/>6.- ¿Cómo puede la asesoría financiera ayudar en la expansión de un negocio?<br/>7.- ¿Qué es el análisis de costo-beneficio?<br/>8.- ¿Qué son los ratios financieros y cómo se utilizan?<br/>9.- ¿Cómo afecta la gestión del riesgo a una empresa?<br/>10.- ¿Qué es la planificación presupuestaria en una empresa?",
+                  text: "<br/>Asesoría Financiera para Empresas<br/>0.- Regresar al menú principal.<br/>1.- ¿Qué es la asesoría financiera para empresas?<br/>2.- ¿Qué áreas cubre la asesoría financiera para empresas?<br/>3.- ¿Por qué es importante la asesoría financiera para pequeñas empresas?<br/>4.- ¿Qué es la evaluación financiera de una empresa?<br/>5.- ¿Qué es el apalancamiento financiero en una empresa?<br/>6.- ¿Cómo puede la asesoría financiera ayudar en la expansión de un negocio?<br/>7.- ¿Qué es el análisis de costo-beneficio?<br/>8.- ¿Qué son los ratios financieros y cómo se utilizan?<br/>9.- ¿Cómo afecta la gestión del riesgo a una empresa?<br/>10.- ¿Qué es la planificación presupuestaria en una empresa?",
                 },
               ]);
               setSubQuestions("Asesoria_Financiera_para_Empresas");

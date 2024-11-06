@@ -1,0 +1,102 @@
+.contenedor-caja {
+    background-color: white;
+    width: 900px;
+    margin-left: 50%;
+    transform: translateX(-50%);
+    border-radius: 20px;
+    border: 3px solid black;
+    margin-top: 10%;
+    margin-bottom: 10%;
+    padding: 20px; /* Añadido para un mejor espaciado interno */
+  }
+  
+  .Formas-de-pago {
+    margin-top: 10px;
+    margin-bottom: 30px;
+    color: #000000;
+    font-family: "Poppins", sans-serif;
+    font-size: 40px;
+    font-weight: 900;
+    text-align: center; /* Centra el texto */
+  }
+  
+  .monto-a-pagar {
+    color: #000000;
+    font-family: "Poppins", sans-serif;
+    font-size: 30px;
+    font-weight: 900;
+    text-align: center; /* Centra el texto */
+    margin-left: 50%;
+    transform: translateX(-50%);
+  }
+  
+  .select-a-pagar {
+    display: block;
+    width: 300px;
+    margin: 20px auto; /* Centramos el selector */
+    padding: 10px;
+    border: 2px solid #000000;
+    border-radius: 7px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 18px;
+    background-color: #f1f1f1;
+  }
+  
+  .stripe,
+  .mercado-pago,
+  .PayPal {
+    margin-bottom: 10px;
+    padding: 10px;
+    border: 3px solid #000000;
+    border-radius: 7px;
+    font-size: 20px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 300;
+    height: fit-content;
+    width: 300px;
+    margin-left: 50%;
+    transform: translateX(-50%);
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .stripe {
+    background-color: #e39de4;
+  }
+  
+  .stripe:hover {
+    background-color: #d484d2;
+  }
+  
+  .mercado-pago {
+    background-color: #9adfd8;
+  }
+  
+  .mercado-pago:hover {
+    background-color: #85cfc6;
+  }
+  
+  .PayPal {
+    background-color: #f9f580;
+    margin-bottom: 40px;
+  }
+  
+  .PayPal:hover {
+    background-color: #f3eb64;
+  }
+  
+  h2 {
+    text-align: center;
+    font-family: 'Poppins', sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    color: #333;
+  }
+  
+  p {
+    text-align: center;
+    font-family: 'Poppins', sans-serif;
+    font-size: 20px;
+    color: #555;
+  }
+  

@@ -16,8 +16,7 @@ router.post('/reset-password', authController.resetPassword);
 router.post('/latest-user-type', authController.getLatestUserType);
 
 
-//solo en lo q pruebo lo nuevo
-//router.post('/upload', authController.uploadFiles);
+
 
 
 

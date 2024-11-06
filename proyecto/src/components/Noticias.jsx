@@ -92,12 +92,15 @@ const Noticias = () => {
                     ))}
                 </select>
             </div>
+            <button className='historialButton' onClick={() => document.getElementById('historial').scrollIntoView({ behavior: 'smooth' })}>
+                    Historial de Noticias
+                </button>
 
             <div>
                 {newsData.length > 0 ? <Card data={newsData} onViewed={handleViewedNews} /> : null}
             </div>
 
-            <div>
+            <div classname="historial"  id="historial">
                 <h2>Historial de Noticias Vistas</h2>
                 {viewedNews.length > 0 ? <Card data={viewedNews} /> : <p>No has visto ninguna noticia.</p>}
             </div>
@@ -106,13 +109,3 @@ const Noticias = () => {
 }
 
 export default Noticias;
-
-
-
-
-
-
-
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
-

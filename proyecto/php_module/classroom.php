@@ -38,7 +38,7 @@
 
         .terms-box {
             background-color: #dcd1e1;
-            width: 95%;
+            width: 100%;
             height: 300px;
             overflow-y: auto;
             padding: 15px;
@@ -74,11 +74,15 @@
         .btn-primary:hover {
             background-color: #0056b3;
         }
+
+        .form-check-label {
+            font-size: 14px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Términos y Condiciones</h1>
+        <h1>Contrato de confidencialidad.</h1>
         <div class="terms-box">
             <!-- Aquí puedes agregar los términos y condiciones -->
             <p>
@@ -132,8 +136,14 @@
             fecha de aceptación por parte del Alumno.
             </p>
         </div>
+        <div class="form-check mb-3">
+            <input class="form-check-input" type="checkbox" id="acceptTerms">
+            <label class="form-check-label" for="acceptTerms">
+                Acepto los términos y condiciones.
+            </label>
+        </div>
         <div class="button-container">
-            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addModal">Subir documentos</button>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addModal" id="openModalBtn" disabled>Subir documentos</button>
         </div>
     </div>
 
@@ -178,7 +188,13 @@
             const fotoRostroData = document.getElementById("fotoRostroData");
             const studentDocument = document.getElementById("studentDocument");
             const addStudentForm = document.getElementById("addStudentForm");
+            const openModalBtn = document.getElementById("openModalBtn");
+            const acceptTerms = document.getElementById("acceptTerms");
             let stream;
+
+            acceptTerms.addEventListener("change", function () {
+                openModalBtn.disabled = !acceptTerms.checked;
+            });
 
             function startCamera() {
                 if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {

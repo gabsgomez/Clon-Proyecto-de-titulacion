@@ -12,14 +12,15 @@ const SesionForm = () => {
   const [step, setStep] = useState(1); // Estado para manejar el paso del formulario
   const [isPasswordReset, setIsPasswordReset] = useState(false); // Estado para manejar el modo de restablecimiento de contraseña
   const [userType, setUserType] = useState(null); // Estado para almacenar el tipo de usuario
-
-  const navigate = useNavigate(); // Hook para navegación
+  const [errorMessage, setErrorMessage] = useState({ correo: "", password: "", codigo: "", estatus: "" });  const navigate = useNavigate(); // Hook para navegación
 
   const handleChange = (e) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
     });
+
+    setErrorMessage({ correo: "", password: "", codigo: "", estatus: "" });
   };
 
   const handleSubmit = async (e) => {
@@ -132,23 +133,33 @@ const SesionForm = () => {
          // const data = await response.text();
          const data = await response.json();
          
-          if (response.status === 200) {
-            console.log(
-              "Correo y contraseña correctos, ingresa el código de verificación"
-            );
-
-            //lo nuevo
-            setUserType(data.userType); // Guardar el tipo de usuario
-            //
-
-            setStep(2); // Pasar al paso de verificación del código
+         if (response.status === 200) {
+          console.log("Correo y contraseña correctos, ingresa el código de verificación");
+          setUserType(data.userType); // Guardar el tipo de usuario
+          setStep(2); // Pasar al paso de verificación del código
+        } else {
+          // Mostrar mensajes específicos de estatus en caso de error
+          if (data.message.includes("deshabilitado")) {
+            setErrorMessage({
+              estatus: "Su usuario está deshabilitado. Si no eres de primer ingreso, por favor envía un correo a a20300685@ceti.mx para comunicarte con un asesor.",
+            });
+          } else if (data.message.includes("primer ingreso")) {
+            setErrorMessage({
+              estatus: "Tu usuario es de primer ingreso y puede tardar en habilitarse. Si no eres de primer ingreso, contacta a un asesor en a20300685@ceti.mx.",
+            });
           } else {
-            console.log("Error al iniciar sesión:", data);
+            setErrorMessage({
+              correo: "Correo o contraseña incorrecta.",
+              password: "Correo o contraseña incorrecta.",
+            }); // Notificación idéntica a registro
           }
-        } catch (error) {
-          console.log("Error en la solicitud de inicio de sesión:", error);
+
+          console.log("Error al iniciar sesión:", data);
         }
-      } else if (step === 2) {
+      } catch (error) {
+        console.log("Error en la solicitud de inicio de sesión:", error);
+      }
+    }  else if (step === 2) {
         try {
           const response = await fetch(
             "http://localhost:5000/api/auth/verify-reset-code",
@@ -177,13 +188,14 @@ const SesionForm = () => {
 
             //navigate("/AulaInteractiva"); // Navegar a la página de inicio después de un inicio de sesión exitoso
           } else {
-            console.log("Error al verificar el código:", data);
+            setErrorMessage({ codigo: "El código de verificación es incorrecto." });
           }
         } catch (error) {
           console.log(
             "Error en la solicitud de verificación del código:",
             error
           );
+          setErrorMessage({ codigo: "Ocurrió un error, intenta nuevamente." });
         }
       }
     }
@@ -192,6 +204,7 @@ const SesionForm = () => {
   const togglePasswordReset = () => {
     setIsPasswordReset(!isPasswordReset);
     setStep(1);
+    setErrorMessage({ correo: "", password: "", codigo: "", estatus: "" });
   };
 
   return (
@@ -208,6 +221,9 @@ const SesionForm = () => {
             onChange={handleChange}
             required
           />
+          {errorMessage.correo && (
+            <p className="error-message">{errorMessage.correo}</p>
+          )}
         </div>
         {isPasswordReset ? (
           <>
@@ -228,6 +244,9 @@ const SesionForm = () => {
                     onChange={handleChange}
                     required
                   />
+                  {errorMessage.codigo && (
+              <p className="error-message">{errorMessage.codigo}</p>
+            )}
                 </div>
                 <button type="submit" className="button">
                   Verificar Código
@@ -246,6 +265,7 @@ const SesionForm = () => {
                     onChange={handleChange}
                     required
                   />
+                 
                 </div>
                 <button type="submit" className="button-secondary">
                   Restablecer Contraseña
@@ -271,6 +291,9 @@ const SesionForm = () => {
                 <button type="submit" className="button-iniciar-sesion">
                   Iniciar Sesión
                 </button>
+                {errorMessage.estatus && (
+                  <p className="error-message">{errorMessage.estatus}</p>
+                )}
               </>
             )}
             {step === 2 && (
@@ -285,6 +308,9 @@ const SesionForm = () => {
                     onChange={handleChange}
                     required
                   />
+                   {errorMessage.codigo && (
+              <p className="error-message">{errorMessage.codigo}</p>
+            )}
                 </div>
                 <button type="submit" className="button">
                   Verificar Código

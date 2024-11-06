@@ -29,12 +29,7 @@ const Caja = () => {
   }); //public key cottaggee
 
   
-  /*
-  // Inicializa Mercado Pago de produccion cuenta prueba vendedor
-  initMercadoPago("APP_USR-654558a2-ed6c-4710-b5fe-aa920f5d5acd", {
-    locale: "es-MX",
-  }); //public key cottaggee de produccion
-*/
+  
 
 
   useEffect(() => {
