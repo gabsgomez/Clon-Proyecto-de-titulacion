@@ -12,8 +12,11 @@ const SesionForm = () => {
   const [step, setStep] = useState(1); // Estado para manejar el paso del formulario
   const [isPasswordReset, setIsPasswordReset] = useState(false); // Estado para manejar el modo de restablecimiento de contraseña
   const [userType, setUserType] = useState(null); // Estado para almacenar el tipo de usuario
-  const [errorMessage, setErrorMessage] = useState({ correo: "", password: "", codigo: "", estatus: "" });  const navigate = useNavigate(); // Hook para navegación
+  const [errorMessage, setErrorMessage] = useState({ correo: "", password: "", codigo: "", estatus: "" });
+  const navigate = useNavigate();
 
+
+  
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -147,7 +150,12 @@ const SesionForm = () => {
             setErrorMessage({
               estatus: "Tu usuario es de primer ingreso y puede tardar en habilitarse. Si no eres de primer ingreso, contacta a un asesor en a20300685@ceti.mx.",
             });
-          } else {
+          } else if (data.message.includes("Su pago no está registrado")) {
+            setErrorMessage({
+              estatus: "Su pago no está registrado y no puede ingresar al sistema. Si se trata de un error, comuníquese al correo a20300685@ceti.mx.",
+            });
+          }
+          else {
             setErrorMessage({
               correo: "Correo o contraseña incorrecta.",
               password: "Correo o contraseña incorrecta.",
