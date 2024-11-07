@@ -1141,9 +1141,14 @@ exports.register = async (req, res) => {
 
 
 
+
+
+
+
+
 // Función para iniciar sesión
 exports.login = async (req, res) => {
-  console.log('Inicio de sesión solicitado'); // Confirmar que la función se llama
+  console.log('Inicio de sesión solicitado');
 
   const { correo, password } = req.body;
   if (!correo || !password) {
@@ -1152,33 +1157,24 @@ exports.login = async (req, res) => {
 
   try {
     const userQuery = 'SELECT * FROM usuario WHERE Correo = ?';
-    console.log('Ejecutando consulta a la base de datos...'); // Verificar que la consulta se ejecuta
+    console.log('Ejecutando consulta a la base de datos...');
 
-    // Ejecutar la consulta usando mysql2/promise
     const [results] = await db.query(userQuery, [correo]);
 
-    console.log('Resultados de la consulta:', results); // Mostrar resultados de la consulta
+    console.log('Resultados de la consulta:', results);
 
     if (results.length === 0) {
       return res.status(401).json({ message: "Correo o contraseña incorrectos." });
     }
 
     const user = results[0];
-    console.log('Contraseña almacenada en la base de datos:', user.Contrasena); // Imprimir la contraseña encriptada
-
-    // Verificar la contraseña ingresada con la almacenada en la base de datos
-    console.log('Comparando contraseña...');
     const validPassword = await bcrypt.compare(password, user.Contrasena);
-    console.log('Resultado de comparación de contraseña:', validPassword); // Mostrar resultado de comparación
 
     if (!validPassword) {
       return res.status(401).json({ message: "Correo o contraseña incorrectos." });
     }
 
-    // Verificar estatus del usuario
     const estatus = user.estatus;
-    console.log('Estatus del usuario:', estatus); // Mostrar estatus del usuario
-
     if (estatus === 'Deshabilitado') {
       return res.status(403).json({ 
         message: "Su usuario está deshabilitado. Si no eres de primer ingreso, por favor envía un correo a a20300685@ceti.mx para comunicarte con un asesor."
@@ -1197,18 +1193,35 @@ exports.login = async (req, res) => {
       });
     }
 
-    // Si la contraseña es válida y el estatus es "Habilitado", continúa con el proceso de verificación de código
+    // Verificar si el usuario ha realizado un pago en la tabla Caja
+    const paymentQuery = `
+      SELECT * FROM Caja 
+      WHERE Alumno = (
+        SELECT ID_Alumno FROM alumnos WHERE Usuario_Generado = ?
+      ) AND Estado_Pago = 1
+    `;
+    const [paymentResults] = await db.query(paymentQuery, [user.ID_Usuario]);
+
+    if (paymentResults.length === 0) {
+      return res.status(403).json({
+        message: "Su pago no está registrado y no puede ingresar al sistema. Si se trata de un error, comuníquese al correo a20300685@ceti.mx."
+      });
+      
+    }
+
+    // Imprimir el registro del pago encontrado
+    console.log('Registro de pago encontrado:', paymentResults[0]);
+
+    // Si el pago está registrado, continúa con el proceso de verificación de código
     const userId = user.ID_Usuario;
     const userType = user.Tipo;
 
     const verificationCode = generateVerificationCode();
-    console.log('Código de verificación generado:', verificationCode); // Mostrar el código de verificación
+    console.log('Código de verificación generado:', verificationCode);
 
     const insertCodeQuery = 'INSERT INTO codigo_de_verificacion (Codigo) VALUES (?)';
     const [insertResult] = await db.query(insertCodeQuery, [verificationCode]);
     const codigoId = insertResult.insertId;
-
-    console.log('ID del código de verificación insertado:', codigoId); // Mostrar ID del código insertado
 
     const updateUserQuery = 'UPDATE usuario SET Codigo_verificacion = ? WHERE ID_Usuario = ?';
     await db.query(updateUserQuery, [codigoId, userId]);
@@ -1239,6 +1252,18 @@ exports.login = async (req, res) => {
     return res.status(500).json({ message: "Error al iniciar sesión" });
   }
 };
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
