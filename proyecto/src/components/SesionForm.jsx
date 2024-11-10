@@ -15,6 +15,9 @@ const SesionForm = () => {
   const [errorMessage, setErrorMessage] = useState({ correo: "", password: "", codigo: "", estatus: "" });
   const navigate = useNavigate();
 
+  const [showGoToPayment, setShowGoToPayment] = useState(false); // Estado para mostrar el botón
+
+
 
   
   const handleChange = (e) => {
@@ -141,6 +144,11 @@ const SesionForm = () => {
           setUserType(data.userType); // Guardar el tipo de usuario
           setStep(2); // Pasar al paso de verificación del código
         } else {
+          //nuevo
+          if (data.goToPayment) {
+            setShowGoToPayment(true); // Mostrar botón para ir a "CajaInicio"
+          }
+
           // Mostrar mensajes específicos de estatus en caso de error
           if (data.message.includes("deshabilitado")) {
             setErrorMessage({
@@ -231,7 +239,9 @@ const SesionForm = () => {
           />
           {errorMessage.correo && (
             <p className="error-message">{errorMessage.correo}</p>
+
           )}
+          
         </div>
         {isPasswordReset ? (
           <>
@@ -302,6 +312,15 @@ const SesionForm = () => {
                 {errorMessage.estatus && (
                   <p className="error-message">{errorMessage.estatus}</p>
                 )}
+                {showGoToPayment && (
+  <button 
+    onClick={() => navigate("/CajaInicio")} 
+    className="button-secondary"
+  >
+    Ir a CajaInicio
+  </button>
+)}
+
               </>
             )}
             {step === 2 && (

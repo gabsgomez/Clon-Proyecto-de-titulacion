@@ -1204,7 +1204,8 @@ exports.login = async (req, res) => {
 
     if (paymentResults.length === 0) {
       return res.status(403).json({
-        message: "Su pago no está registrado y no puede ingresar al sistema. Si se trata de un error, comuníquese al correo a20300685@ceti.mx."
+        message: "Su pago no está registrado y no puede ingresar al sistema. Si se trata de un error, comuníquese al correo a20300685@ceti.mx.",
+        goToPayment: true // Indicador para mostrar el botón en el frontend
       });
       
     }

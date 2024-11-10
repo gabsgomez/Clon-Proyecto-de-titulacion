@@ -1,60 +1,4 @@
 <?php
-/*
-include "db.php";
-
-// Clave y método de encriptación
-$key = 'QuieroComerUnaMaruchanDeHabanero'; // Clave de 32 caracteres para AES-256-CBC
-
-// Función para desencriptar
-function decrypt($data, $key) {
-    list($encrypted_data, $iv) = explode('::', $data, 2);
-    return openssl_decrypt($encrypted_data, 'AES-256-CBC', $key, 0, base64_decode($iv));
-}
-
-$id = $_GET['id'];
-$file_type = $_GET['file'];
-
-$sql = "SELECT * FROM contratos WHERE ID_Contrato = '$id'";
-$resultado = mysqli_query($conexion, $sql);
-
-if (mysqli_num_rows($resultado) == 1) {
-    $fila = mysqli_fetch_assoc($resultado);
-
-    if ($file_type === 'documento') {
-        $archivo = decrypt($fila['Documentos'], $key);
-        $content_type = 'application/pdf';
-    } elseif ($file_type === 'foto') {
-        $archivo = decrypt($fila['Foto_Rostro'], $key);
-        $content_type = 'image/png';
-    } else {
-        echo "Tipo de archivo no válido.";
-        exit;
-    }
-
-    $ruta_archivo = __DIR__ . '/' . $archivo;
-
-    if (file_exists($ruta_archivo)) {
-        header('Content-Description: File Transfer');
-        header('Content-Type: ' . $content_type);
-        header('Content-Disposition: attachment; filename="' . basename($archivo) . '"');
-        header('Expires: 0');
-        header('Cache-Control: must-revalidate');
-        header('Pragma: public');
-        header('Content-Length: ' . filesize($ruta_archivo));
-        flush();
-        readfile($ruta_archivo);
-        exit;
-    } else {
-        echo 'El archivo no existe en el servidor.';
-    }
-} else {
-    echo 'El archivo no está en la base de datos.';
-}
-?>
-*/
-
-
-
 
 include "db.php";
 
@@ -62,7 +6,8 @@ include "db.php";
 $key = 'QuieroComerUnaMaruchanDeHabanero'; // Clave de 32 caracteres para AES-256-CBC
 
 // Función para desencriptar
-function decrypt($data, $key) {
+function decrypt($data, $key)
+{
     list($encrypted_data, $iv) = explode('::', $data, 2);
     return openssl_decrypt($encrypted_data, 'AES-256-CBC', $key, 0, base64_decode($iv));
 }
