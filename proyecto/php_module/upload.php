@@ -6,7 +6,7 @@ header('Content-Type: application/json');
 $key = 'QuieroComerUnaMaruchanDeHabanero'; // Clave de 32 caracteres para AES-256-CBC
 $iv = openssl_random_pseudo_bytes(openssl_cipher_iv_length('AES-256-CBC'));
 
-// Función para encriptar
+// Función para encriptar 
 function encrypt($data, $key, $iv) {
     return openssl_encrypt($data, 'AES-256-CBC', $key, 0, $iv) . '::' . base64_encode($iv);
 }

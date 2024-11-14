@@ -317,7 +317,7 @@ const SesionForm = () => {
     onClick={() => navigate("/CajaInicio")} 
     className="button-secondary"
   >
-    Ir a CajaInicio
+    Ir a Caja
   </button>
 )}
 
