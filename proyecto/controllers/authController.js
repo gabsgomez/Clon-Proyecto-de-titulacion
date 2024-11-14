@@ -1,11 +1,10 @@
-const db = require('../db/db');
+const db = require('../db/db.js');
 const nodemailer = require('nodemailer');
 const { generateVerificationCode } = require('../utils/codeGenerator');
 
 /*lo nuevo */
 
 const path = require('path');
-
 
 // Función para generar palabras aleatorias de 6 caracteres
 exports.generateVerificationCode = () => {
@@ -18,6 +17,32 @@ exports.generateVerificationCode = () => {
     code += alphabet[randomIndex];
   }
   return code;
+};
+
+exports.getUserType = async (req, res) => {
+  try {
+    const userId = req.query.userId;
+    if (!userId) {
+      return res.status(400).send('ID de usuario requerido');
+    }
+
+    const query = 'SELECT Tipo FROM usuario WHERE ID_Usuario = ?';
+    db.query(query, [userId], (err, results) => {
+      if (err) {
+        console.error('Error en la consulta:', err);
+        return res.status(500).send('Error al obtener el tipo de usuario');
+      }
+
+      if (results.length > 0) {
+        res.json({ tipo: results[0].Tipo });
+      } else {
+        res.status(404).send('Usuario no encontrado');
+      }
+    });
+  } catch (err) {
+    console.error('Error del servidor:', err);
+    res.status(500).send('Error interno del servidor');
+  }
 };
 
 // Función para generar el ID del contrato
@@ -163,9 +188,6 @@ exports.register = async (req, res) => {
 
   try {
 
-    
-    
-
     const contratoId = await generateContratoId();
     const contratoQuery = 'INSERT INTO contratos (ID_Contrato) VALUES (?)';
     await db.query(contratoQuery, [contratoId]);
@@ -213,6 +235,7 @@ exports.register = async (req, res) => {
 
 exports.login = async (req, res) => {
   const { correo, password } = req.body;
+  console.log(req.body);
   if (!correo || !password) {
     return res.status(400).send('Por favor, proporciona correo y contraseña');
   }
@@ -233,7 +256,7 @@ exports.login = async (req, res) => {
       
       
       const verificationCode = generateVerificationCode();  // Generar nuevo código
-
+      console.log(verificationCode);
       const insertCodeQuery = 'INSERT INTO codigo_de_verificacion (Codigo) VALUES (?)';
       db.query(insertCodeQuery, [verificationCode], async (err, result) => {
         if (err) {

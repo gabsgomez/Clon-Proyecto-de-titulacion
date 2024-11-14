@@ -35,7 +35,7 @@ const SesionForm = () => {
                 "Content-Type": "application/json",
               },
               body: JSON.stringify({ correo: formData.correo }),
-            }
+            },
           );
           const data = await response.text();
           if (response.status === 200) {
@@ -44,13 +44,13 @@ const SesionForm = () => {
           } else {
             console.log(
               "Error al solicitar el restablecimiento de contraseña:",
-              data
+              data,
             );
           }
         } catch (error) {
           console.log(
             "Error en la solicitud de restablecimiento de contraseña:",
-            error
+            error,
           );
         }
       } else if (step === 2) {
@@ -67,7 +67,7 @@ const SesionForm = () => {
                 correo: formData.correo,
                 codigo: formData.codigo,
               }),
-            }
+            },
           );
           const data = await response.text();
           if (response.status === 200) {
@@ -79,7 +79,7 @@ const SesionForm = () => {
         } catch (error) {
           console.log(
             "Error en la solicitud de verificación del código:",
-            error
+            error,
           );
         }
       } else if (step === 3) {
@@ -97,7 +97,7 @@ const SesionForm = () => {
                 codigo: formData.codigo,
                 nuevaContrasena: formData.newPassword,
               }),
-            }
+            },
           );
           const data = await response.text();
           if (response.status === 200) {
@@ -110,7 +110,7 @@ const SesionForm = () => {
         } catch (error) {
           console.log(
             "Error en la solicitud de restablecimiento de contraseña:",
-            error
+            error,
           );
         }
       }
@@ -118,6 +118,7 @@ const SesionForm = () => {
       // Inicio de sesión
       if (step === 1) {
         try {
+          console.log("Iniciando sesión...", formData.correo, formData.password);
           const response = await fetch("http://localhost:5000/api/auth/login", {
             method: "POST",
             headers: {
@@ -132,7 +133,7 @@ const SesionForm = () => {
 
           if (response.status === 200) {
             console.log(
-              "Correo y contraseña correctos, ingresa el código de verificación"
+              "Correo y contraseña correctos, ingresa el código de verificación",
             );
 
             setStep(2); // Pasar al paso de verificación del código
@@ -155,7 +156,7 @@ const SesionForm = () => {
                 correo: formData.correo,
                 codigo: formData.codigo,
               }),
-            }
+            },
           );
           const data = await response.text();
           if (response.status === 200) {
@@ -168,7 +169,7 @@ const SesionForm = () => {
         } catch (error) {
           console.log(
             "Error en la solicitud de verificación del código:",
-            error
+            error,
           );
         }
       }
@@ -258,7 +259,7 @@ const SesionForm = () => {
                   Iniciar Sesión
                 </button>
               </>
-            )}
+            )} 
             {step === 2 && (
               <>
                 <div className="form-groupp">
